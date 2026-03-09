@@ -1,0 +1,209 @@
+REU CONDOMINIOS PERUANOS 6 MARZO 2026:
+
+AREAS DE LA EMPRESA
+  MARKETING 3 personas (todos editan videos)
+    manejan redes, cuentas publicitarias, chatty, 
+    fabricio trafficker
+
+
+  FINANZAS (administracion) (maite) 
+    ingresos, pagos de planilla, pagan comisiones
+
+  RECURSOS HUMANOS
+    1 persona
+  
+  CONTABILIDAD (externa)
+
+
+  PROYECTO
+    todo lo que tiene que ver con arqu e ingenieria
+
+  LOGISTICA (raisa)
+    artefactos, requeriminetos, compras de regalos a clientes
+  
+    
+
+  EXPERIENCIA (cobranzas)
+    3 personas (ellas van a notaria)
+
+  VENTAS recaudan la separacion y la inicial
+    asesor 9, supervisor 1 y jefe comercial 1
+
+  
+SOlo sede en trujillo
+SOlo proyectos propios
+2 proyectos en venta, 1 por abrir.
+
+
+
+AREAS DE MAS CARGA OPERATIVA -> VENTAS Y EXPERIENCIA
+
+COMO GESTIONAN LA ENTREGA DE TERRENOS
+gestion de la entrega o propiedades, son fechas fijas del proyecto.  No hay un proceso definido porque aun no han entregado ningun terreno
+Contrato se redacta de forma mannual despues de la validacion de administracion
+
+
+CANTIDAD DE CUOTAS SON CANTIDADES FIJAS 12,24,36,42
+HAY MORA 5soles por dia hasta el noveno dia, si el cliente se excedio mas de 10 dias, 10soles por día
+las moras corren desde la fecha limite para despues
+Pero pueden escribir antes y omitir la mora pero eso lo evalua el area de exp al cliente
+
+
+
+
+COMo manejan reclamos u incidencias
+☐ a veces el cliente da adelanto pero se retracta, en ese caso si llego a firmar FICHA DE SEPARACIÓN (la que tiene el DNI), no se le retorna. 
+☐ CLiente envia un correo con cierto formato pre-definido, ahi se evalua el caso y se eleva a KAREN (jefa de operaciones) y se procede con la devolución (la dev puede ser de la separacion o de la inicial)
+
+
+ENVIO DE LAS BOLETAS
+contabilidad emite boletas en el sistema, area de experiencia las envia. IGUAL QUE EN BURS
+
+
+RECORDATORIOS AUTOMATICOS A CLIENTES (PARECIDO A LAR CUMPLE)
+
+
+COMO MANEJAN LOS DESCUENTOS, pueden descontarle 1000soles maximo sin autorizacion extra. Pero la supervisora puede autorizar descontar 2000soles y ofrecerle facilidades () o beneficios
+ 
+
+
+
+a veces los clientes cambian de lotes, pero esos casos son muy particulares y requiere aprobacion de superiores
+
+modifican los precios cada que hay avances reales en el proyecto
+
+se deben manejar aprobaciones de descuentos extra-ordinarios y que se vean en el sistema
+
+
+historial tanto a nivel de cliente como de lote
+
+
+alertas de cobranzas
+envio autom de recordatorios
+
+
+
+los asesores tiene libertad de vender cualquier lote disponible
+
+
+
+EXISTE PROCESO DE ATENCION POSTVENTA
+
+
+COMO MANEJAN RECLAMOS O INCIDENCIA
+
+
+en la logica un cliente puede ser atendido por varios asesores? SI PERO PARA DISTINTOS PROYECTOS, ES COMPETENCIA REAL
+
+equipos- no hay como tal pero hay asesores de ventas externos e internos
+
+
+COMISIONES
+  VENTAS COMISION POR ESCALAS 
+
+
+    de 1 a 10 ventas, 200 soles por cada lote
+    de 11 a 20, 300soles por cada lote
+    21 a mas, 350 soles por cada lote
+
+  Tambien hay bono mejor recaudador 2000soles
+  hay bono por vender minimo 3 lotes al contado
+    
+  EXPERIENCIA
+    BONOS, Pero esta por definirse aun porque no lo tienen implementado todavia
+
+
+
+a veces los clientes adelantan cuotas, no se suelen brindar descuentos
+
+
+
+TAMBIEN DAN FACTURAS, pero siempre que un cliente se le emite factura en la 1ra cuota, las siguientes seran factura. igual con boleta
+
+
+
+
+
+
+IMPORTANTE CONSIDERAR HISTORICO DE UN LOTE (SE CAE A VECES)
+
+
+
+
+
+
+PROPONER TICKETERA PARA AREA AUDIOVISUAL  
+ventas usan contacts??  NO USAN
+Marketing: manejan comisiones segun mejores videos  # resultados, #leads
+
+
+
+
+AREA DE ADMINISTRACION Y FINANZAS
+BANCOS INTERBANK BBV Y SCOTIA
+se pasa a un excel que seria la conciliacion
+luego se chequea los pagos de clientes, voucher
+
+ELlas emiten la boleta o factura desde la SUNAT, 
+
+registro de los gastos pasan por aprobaciones
+  gerencia proyectos (esto tiene que ver con construccion)
+  geerncia operativa ventas, exp cliente y marketing
+
+LUego que pasa por esos vistos bueno, se efectua la transferencia
+Menos de 1k se pasa directo, aparentemente
+de 2k a mas se requiere cotización.
+ESTE FLUJO DEBERIAMOS DEFINIRLO BIEN
+
+cada gasto tiene una clasificacion, area ventas, proyecto, material tecnico
+
+TENIAN UN LOOKER -> 
+
+
+COMISIONES LO PAGAN POR PLANILLA, JUNTO CON EL SUELDO
+
+
+
+contratos planilla lo hace area externa
+
+
+
+LA CONCILIACION SE LLENA DE FORMA MANUAL DESDE EL BANCO HACIA UN EXCEL, 
+
+
+RECURSOS HUMANOS
+Maneja excel de planilla
+suben boletas de pagos de sueldo, documentacion dni, cv, ficha de personal
+
+
+
+
+caja chica
+RINDEN CUENTAS PARA CASOS DE CAJA CHICA 
+
+
+CONTROL DE ACTIVOS ENLAZADO A QUIEN LO ESTA USANDO,
+
+
+REPORTES:
+  Totales a recaudar a nivel de mes, diario 
+  TOtal perdido por lotes caidos
+  totales proyectados
+  Totales recaudados por asesores
+
+
+
+EXCELs mostrados:
+  ☐ excellistado de los lotes (con estado y monto pagado)
+  ☐ excel visitas a proyecto
+  ☐ TIENEN UN MANUAL DE VENTAS y de todas las areas tambn pedir
+  ☐ pedir visualizacion al looker (solo es del area de recaudación)
+  ☐ WORD DE COMISIONES DE AREA DE VENTAS
+  ☐ PEDIR APP HTML DE TICKETERA
+  ☐ LOOKER DE ADMINISTRACION 
+  ☐ EXCELS DE CONCILIACION ADM
+  ☐ EXCEL DE CONTABILIDAD
+  ☐ EXCEL DE RECURSOS HUMANOS - planilla
+  ☐ Excel de activos relacion de quien tiene que 
+
+
