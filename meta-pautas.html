@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Pautas - Dashboard Avanzado</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d5a4e;
+            --primary-dark: #1a3a32;
+            --accent: #00d4ff;
+            --accent-warm: #ff6b6b;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --bg-dark: #0f1419;
+            --bg-card: #1a2332;
+            --bg-hover: #242f3f;
+            --text-primary: #e0e6ed;
+            --text-secondary: #a8b2c1;
+            --border: #2a3a4a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a2f2a 100%);
+            color: var(--text-primary);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(45, 90, 78, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00d4ff 0%, #00f0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1em;
+        }
+
+        .controls {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 10px 14px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300d4ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 20px;
+            padding-right: 35px;
+            cursor: pointer;
+        }
+
+        .control-group input {
+            background: var(--bg-hover);
+            padding-right: 14px;
+        }
+
+        .control-group select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .control-group input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+            background-color: rgba(0, 212, 255, 0.05);
+        }
+
+        .controls-actions {
+            display: flex;
+            gap: 10px;
+            grid-column: -2 / -1;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 90, 78, 0.4);
+            border-color: var(--accent);
+        }
+
+        button.btn-export {
+            background: linear-gradient(135deg, var(--accent-warm) 0%, #ff5252 100%);
+        }
+
+        button.btn-export:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .toggle-charts {
+            background: linear-gradient(135deg, var(--accent) 0%, #00f0ff 100%);
+            color: var(--bg-dark);
+        }
+
+        .toggle-charts:hover {
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-nueva-pauta {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .btn-nueva-pauta:hover {
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-nueva-fecha {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .btn-nueva-fecha:hover {
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        /* =================== MODAL =================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            width: auto;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 14px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300d4ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 20px;
+            padding-right: 35px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+            background-color: rgba(0, 212, 255, 0.05);
+        }
+
+        .form-group select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .modal-actions button {
+            padding: 12px 24px;
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            border-color: var(--accent);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-warm) 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent) 0%, #00f0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+
+        th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.5;
+            font-size: 0.8em;
+        }
+
+        th.sort-asc::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9em;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        tbody tr.best-performer {
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        tbody tr.best-performer:hover {
+            background: rgba(255, 107, 107, 0.15);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.85em;
+            display: inline-block;
+        }
+
+        .creator-tony {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+
+        .creator-fabrizio {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.4);
+        }
+
+        .creator-benjamin {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border: 1px solid rgba(39, 174, 96, 0.4);
+        }
+
+        .creator-atom {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 1px solid rgba(243, 156, 18, 0.4);
+        }
+
+        .status-active {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border: 1px solid rgba(39, 174, 96, 0.4);
+        }
+
+        .status-inactive {
+            background: rgba(149, 165, 166, 0.2);
+            color: #bdc3c7;
+            border: 1px solid rgba(149, 165, 166, 0.4);
+        }
+
+        .account-oasis1 {
+            background: rgba(186, 85, 211, 0.2);
+            color: #ba55d3;
+            border: 1px solid rgba(186, 85, 211, 0.4);
+        }
+
+        .account-oasis3 {
+            background: rgba(50, 205, 50, 0.2);
+            color: #32cd32;
+            border: 1px solid rgba(50, 205, 50, 0.4);
+        }
+
+        .account-oasis4 {
+            background: rgba(255, 140, 0, 0.2);
+            color: #ff8c00;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+
+        .account-oasis-inmb {
+            background: rgba(30, 144, 255, 0.2);
+            color: #1e90ff;
+            border: 1px solid rgba(30, 144, 255, 0.4);
+        }
+
+        .account-palmeras {
+            background: rgba(219, 112, 147, 0.2);
+            color: #db7093;
+            border: 1px solid rgba(219, 112, 147, 0.4);
+        }
+
+        .editable-cell {
+            padding: 0 !important;
+        }
+
+        .cell-select {
+            width: 100%;
+            padding: 14px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.9em;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            font-weight: 600;
+        }
+
+        .cell-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: rgba(0, 212, 255, 0.05);
+        }
+
+        .cell-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        /* Colores para creadores en selects */
+        .cell-select.creator-tony {
+            background-color: rgba(0, 212, 255, 0.15);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .cell-select.creator-fabrizio {
+            background-color: rgba(255, 107, 107, 0.15);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .cell-select.creator-benjamin {
+            background-color: rgba(39, 174, 96, 0.15);
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .cell-select.creator-atom {
+            background-color: rgba(243, 156, 18, 0.15);
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+
+        /* Colores para cuentas en selects */
+        .cell-select.account-oasis1 {
+            background-color: rgba(186, 85, 211, 0.15);
+            border-color: #ba55d3;
+            color: #ba55d3;
+        }
+
+        .cell-select.account-oasis3 {
+            background-color: rgba(50, 205, 50, 0.15);
+            border-color: #32cd32;
+            color: #32cd32;
+        }
+
+        .cell-select.account-oasis4 {
+            background-color: rgba(255, 140, 0, 0.15);
+            border-color: #ff8c00;
+            color: #ff8c00;
+        }
+
+        .cell-select.account-oasis-inmb {
+            background-color: rgba(30, 144, 255, 0.15);
+            border-color: #1e90ff;
+            color: #1e90ff;
+        }
+
+        .cell-select.account-palmeras {
+            background-color: rgba(219, 112, 147, 0.15);
+            border-color: #db7093;
+            color: #db7093;
+        }
+
+        /* Input numérico editable */
+        .cell-input {
+            width: 100%;
+            padding: 14px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.9em;
+            font-family: inherit;
+            border-radius: 0;
+        }
+
+        .cell-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: rgba(0, 212, 255, 0.05);
+        }
+
+        /* Estilos para inputs con atributo data-type */
+        .cell-input[type="number"]::after {
+            content: '%';
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            padding: 6px 10px;
+            font-size: 0.8em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--accent);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-action:hover {
+            background: rgba(0, 212, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .btn-action.btn-delete {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-action.btn-delete:hover {
+            background: rgba(255, 107, 107, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .charts-section {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .charts-section.active {
+            display: grid;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .chart-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-button:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-actions {
+                grid-column: auto;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .table-wrapper {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card {
+            animation: fadeIn 0.6s ease-out backwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+        .stat-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="flex: 1;">
+                <h1>📊 Control de Pautas</h1>
+                <p>Dashboard avanzado para gestionar y analizar 88 pautas publicitarias</p>
+            </div>
+            <svg width="140" height="110" viewBox="0 0 140 110" xmlns="http://www.w3.org/2000/svg" style="margin-right: 20px; flex-shrink: 0;">
+                <defs>
+                    <linearGradient id="laptopMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e8e8e8;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#d0d0d0;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#b0b0b0;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="screenShine" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.4" />
+                        <stop offset="100%" style="stop-color:#1e90ff;stop-opacity:0.2" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Base/Teclado de la laptop -->
+                <rect x="8" y="65" width="124" height="35" rx="4" fill="url(#laptopMetal)" stroke="#888" stroke-width="1.5"/>
+                
+                <!-- Teclado detallado -->
+                <g opacity="0.6">
+                    <!-- Filas de teclas -->
+                    <rect x="15" y="72" width="110" height="4" fill="#666" rx="1"/>
+                    <rect x="15" y="78" width="110" height="4" fill="#666" rx="1"/>
+                    <rect x="15" y="84" width="110" height="4" fill="#666" rx="1"/>
+                </g>
+
+                <!-- Trackpad -->
+                <rect x="45" y="90" width="50" height="8" rx="2" fill="#888" stroke="#666" stroke-width="1"/>
+                
+                <!-- Borde/Bisagra entre pantalla y teclado -->
+                <rect x="8" y="64" width="124" height="2" fill="#999" rx="1"/>
+
+                <!-- Pantalla/Display -->
+                <rect x="10" y="8" width="120" height="60" rx="6" fill="url(#screenGradient)" stroke="#888" stroke-width="2"/>
+                
+                <!-- Brillo/reflejo en pantalla -->
+                <rect x="12" y="10" width="116" height="56" rx="5" fill="url(#screenShine)" opacity="0.6"/>
+
+                <!-- Contenido de pantalla (iconos/interfaz) -->
+                <g opacity="0.8">
+                    <!-- Barra superior -->
+                    <rect x="15" y="13" width="110" height="4" fill="#00d4ff" rx="1"/>
+                    
+                    <!-- Elementos de interfaz -->
+                    <rect x="18" y="22" width="35" height="3" fill="#1e90ff"/>
+                    <rect x="18" y="28" width="35" height="3" fill="#1e90ff"/>
+                    <rect x="18" y="34" width="35" height="3" fill="#1e90ff"/>
+                    <rect x="18" y="40" width="35" height="3" fill="#1e90ff"/>
+                    
+                    <rect x="60" y="22" width="60" height="20" fill="#0099cc" opacity="0.7" rx="2"/>
+                    <circle cx="75" cy="32" r="3" fill="#00ff00"/>
+                    <circle cx="85" cy="32" r="3" fill="#00ff00"/>
+                    <circle cx="95" cy="32" r="3" fill="#00ff00"/>
+                    
+                    <!-- Gráfico pequeño -->
+                    <line x1="60" y1="48" x2="65" y2="44" stroke="#00d4ff" stroke-width="1"/>
+                    <line x1="65" y1="44" x2="70" y2="46" stroke="#00d4ff" stroke-width="1"/>
+                    <line x1="70" y1="46" x2="75" y2="42" stroke="#00d4ff" stroke-width="1"/>
+                    <line x1="75" y1="42" x2="80" y2="45" stroke="#00d4ff" stroke-width="1"/>
+                </g>
+
+                <!-- Marco de aluminio de la pantalla -->
+                <rect x="8" y="5" width="124" height="65" rx="7" fill="none" stroke="#999" stroke-width="1.5" opacity="0.8"/>
+                
+                <!-- Luz LED de estado -->
+                <circle cx="130" cy="70" r="2.5" fill="#00ff00" opacity="0.9"/>
+                <circle cx="130" cy="70" r="1.5" fill="#ffffff"/>
+
+                <!-- Sombra/profundidad -->
+                <ellipse cx="70" cy="105" rx="60" ry="5" fill="#000" opacity="0.1"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>🔍 Buscar</label>
+            <input type="text" id="buscador" placeholder="Nombre, creador, cuenta...">
+        </div>
+        <div class="control-group">
+            <label>👤 Creador</label>
+            <select id="filtroCreador">
+                <option value="">Todos</option>
+                <option value="TONY">TONY</option>
+                <option value="FABRIZIO">FABRIZIO</option>
+                <option value="BENJAMIN">BENJAMIN</option>
+                <option value="ATOM">ATOM</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📱 Estado</label>
+            <select id="filtroEstado">
+                <option value="">Todos</option>
+                <option value="activa">Activas</option>
+                <option value="inactiva">Inactivas</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>📅 Fecha Específica</label>
+            <select id="selectorFecha" onchange="cambiarFechaEspecifica(this.value)">
+                <option value="">Cargando...</option>
+            </select>
+        </div>
+        <div class="controls-actions">
+            <button class="toggle-charts" onclick="toggleCharts()">📈 Gráficos</button>
+            <button class="btn-export" onclick="exportarCSV()">📥 Exportar</button>
+            <button class="btn-nueva-pauta" onclick="abrirModalNuevapauta()">➕ Nueva Pauta</button>
+            <button class="btn-nueva-fecha" onclick="abrirModalNuevaFecha()">📅 Nueva Fecha</button>
+        </div>
+    </div>
+
+    <div class="stats" id="estadisticas"></div>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="switchTab('tabla')">📋 Tabla</button>
+        <button class="tab-button" onclick="switchTab('analisis')">📊 Análisis</button>
+    </div>
+
+    <div id="tabla-view">
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table id="tablaPautas">
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="ordenarTabla('nombre')">Nombre</th>
+                            <th class="sortable" onclick="ordenarTabla('fecha')">Fecha</th>
+                            <th class="sortable" onclick="ordenarTabla('creador')">👤 Creador</th>
+                            <th class="sortable" onclick="ordenarTabla('cuenta')">📱 Cuenta</th>
+                            <th class="sortable" onclick="ordenarTabla('activa')">Estado</th>
+                            <th class="sortable" onclick="ordenarTabla('cpl')">CPL</th>
+                            <th class="sortable" onclick="ordenarTabla('hook')">Hook</th>
+                            <th class="sortable" onclick="ordenarTabla('thruplay')">Thruplay</th>
+                            <th class="sortable" onclick="ordenarTabla('ret100')">Retención al 100%</th>
+                            <th class="sortable" onclick="ordenarTabla('leads')">Leads</th>
+                            <th>Notas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        <tr>
+                            <td colspan="11" class="empty-state">
+                                <div class="empty-state-icon">⏳</div>
+                                <p>Cargando pautas...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-section" id="analisis-view">
+        <div class="chart-card">
+            <div class="chart-title">📈 Performance por Creador</div>
+            <canvas id="chartCreadores"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">💰 CPL vs Leads</div>
+            <canvas id="chartCPLLeads"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">🎯 Distribución de Estados</div>
+            <canvas id="chartEstados"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">⚡ Top 10 Pautas por Performance</div>
+            <canvas id="chartTop10"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">📊 Promedio de Métricas por Creador</div>
+            <canvas id="chartMetricasCreador"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">🏆 Hook vs Thruplay</div>
+            <canvas id="chartHookThruplay"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">🔥 Pautas por Cuenta</div>
+            <canvas id="chartCuentas"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-title">📅 Pautas por Mes</div>
+            <canvas id="chartMeses"></canvas>
+        </div>
+    </div>
+
+    <!-- ===== MODAL NUEVA PAUTA ===== -->
+    <div class="modal" id="modalNuevapauta">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>➕ Nueva Pauta</span>
+                <button class="modal-close" onclick="cerrarModalNuevapauta()">✕</button>
+            </div>
+            <form id="formularioNuevapauta" onsubmit="crearNuevapauta(event)">
+                <div class="form-group">
+                    <label>Nombre de la Pauta *</label>
+                    <input type="text" id="inputNombre" required placeholder="Ej: 089_MI PAUTA">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <select id="inputFecha">
+                            <option value="">—</option>
+                            <option value="ENERO">ENERO</option>
+                            <option value="FEBRERO">FEBRERO</option>
+                            <option value="MARZO">MARZO</option>
+                            <option value="ABRIL">ABRIL</option>
+                            <option value="MAYO">MAYO</option>
+                            <option value="JUNIO">JUNIO</option>
+                            <option value="JULIO">JULIO</option>
+                            <option value="AGOSTO">AGOSTO</option>
+                            <option value="SEPTIEMBRE">SEPTIEMBRE</option>
+                            <option value="OCTUBRE">OCTUBRE</option>
+                            <option value="NOVIEMBRE">NOVIEMBRE</option>
+                            <option value="DICIEMBRE">DICIEMBRE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Creador *</label>
+                        <select id="inputCreador" required>
+                            <option value="TONY">TONY</option>
+                            <option value="FABRIZIO">FABRIZIO</option>
+                            <option value="BENJAMIN">BENJAMIN</option>
+                            <option value="ATOM">ATOM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cuenta</label>
+                    <select id="inputCuenta">
+                        <option value="">—</option>
+                        <option value="INM OASIS 1">INM OASIS 1</option>
+                        <option value="INM OASIS 3">INM OASIS 3</option>
+                        <option value="INM OASIS 4">INM OASIS 4</option>
+                        <option value="OASIS INMB">OASIS INMB</option>
+                        <option value="ELEVA INMOB.">ELEVA INMOB.</option>
+                        <option value="PALMERAS 2.1">PALMERAS 2.1</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="inputActiva">
+                            <option value="true">✓ Activa</option>
+                            <option value="false">○ Inactiva</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>CPL (s/)</label>
+                        <input type="number" id="inputCpl" step="0.1" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Hook (%)</label>
+                        <input type="number" id="inputHook" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Thruplay (%)</label>
+                        <input type="number" id="inputThruplay" step="0.1" min="0" max="100" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Retención al 100% (%)</label>
+                    <input type="number" id="inputRet100" min="0" max="100" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Leads</label>
+                    <input type="number" id="inputLeads" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Notas</label>
+                    <input type="text" id="inputNotas" placeholder="Añade notas adicionales...">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalNuevapauta()">Cancelar</button>
+                    <button type="submit" class="btn-primary">➕ Crear Pauta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL NUEVA FECHA ===== -->
+    <div class="modal" id="modalNuevaFecha">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📅 Nueva Fecha para Seguimiento</span>
+                <button class="modal-close" onclick="cerrarModalNuevaFecha()">✕</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9em;">
+                Se creará un nuevo seguimiento con los mismos creadores, cuentas y estados, pero con CPL, Hook, Thruplay, Leads y Notas en blanco.
+            </p>
+            <form id="formularioNuevaFecha" onsubmit="crearNuevaFecha(event)">
+                <div class="form-group">
+                    <label>Nombre de la Fecha *</label>
+                    <input type="text" id="inputNombreFecha" required placeholder="Ej: 5 de marzo, Seguimiento 2, etc.">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalNuevaFecha()">Cancelar</button>
+                    <button type="submit" class="btn-primary">📅 Crear Fecha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATOS DE 88 PAUTAS =====
+        const datosIniciales = [{nombre:"007_TIOZZ AQUÍ EN MALABRIGO_TONY",fecha:"ENERO",creador:"TONY",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"1 dia de"},{nombre:"011_TINIV2_FABRI",fecha:"ENERO",creador:"FABRIZIO",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"1 dia de"},{nombre:"017_ARTIFICIAL_FABRI",fecha:"diciembre",creador:"FABRIZIO",cuenta:"INM OASIS 4",activa:true,cpl:8.1,hook:31,thruplay:5.7,ret100:73,notas:"2° mejor"},{nombre:"025_atom v2",fecha:"diciembre",creador:"ATOM",cuenta:"ELEVA INMOB.",activa:true,cpl:9.7,hook:30,thruplay:14,ret100:25,notas:""},{nombre:"030_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"1 dia de"},{nombre:"031_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"034_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 3",activa:true,cpl:7.2,hook:54,thruplay:7.7,ret100:94,notas:"mejor pauta hoy"},{nombre:"036_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 4",activa:true,cpl:8.3,hook:42,thruplay:18,ret100:7,notas:""},{nombre:"039_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"acompaña"},{nombre:"047_3D DINERO IA",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:10.4,hook:46,thruplay:5.2,ret100:39,notas:""},{nombre:"051_SELFIE",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"acompaña"},{nombre:"055_emotivo AZUCENA",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:9.7,hook:40,thruplay:10.8,ret100:14,notas:"BUENOS LEADS"},{nombre:"056_TESTPAUTA 4",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:18,hook:25,thruplay:8.14,ret100:6,notas:"apagar posiblemente"},{nombre:"061_JOSUE B",fecha:"FEBRERO",creador:"BENJAMIN",cuenta:"INM OASIS 1",activa:false,cpl:4.7,hook:48,thruplay:3.7,ret100:25,notas:""},{nombre:"063_STORY TEFF",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"ELEVA INMOB.",activa:false,cpl:8.4,hook:31,thruplay:5.8,ret100:54,notas:"NUEVO 5 DIAS"},{nombre:"064_STORY TEFF 2",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"INM OASIS 3",activa:false,cpl:10.6,hook:27,thruplay:11,ret100:19,notas:"5 días de"},{nombre:"065_ARTIFICIAL FABRI 2",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"INM OASIS 1",activa:false,cpl:0,hook:0,thruplay:0,ret100:0,notas:"nueva 1 dia"},{nombre:"066_TESTIMONIO WOW",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"INM OASIS 1",activa:false,cpl:0,hook:0,thruplay:0,ret100:0,notas:"nueva 1 dia"},{nombre:"067_ESTILO COLOMBIA",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:false,cpl:9.8,hook:14,thruplay:8,ret100:2,notas:"1 dia"},{nombre:"068_EXPERIENCIA WENDY",fecha:"FEBRERO",creador:"BENJAMIN",cuenta:"INM OASIS 1",activa:false,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"070_EXDINERO",fecha:"",creador:"FABRIZIO",cuenta:"ELEVA INMOB.",activa:false,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"071_CLASIC1",fecha:"",creador:"TONY",cuenta:"INM OASIS 4",activa:false,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"072_CLASSIC 2",fecha:"",creador:"TONY",cuenta:"INM OASIS 4",activa:false,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"3_ATOM",fecha:"diciembre",creador:"ATOM",cuenta:"PALMERAS 2.1",activa:true,cpl:5,hook:0,thruplay:0,ret100:4,notas:""},{nombre:"4_ATOM",fecha:"diciembre",creador:"ATOM",cuenta:"PALMERAS 2.1",activa:true,cpl:8,hook:0,thruplay:0,ret100:28,notas:"duplicado"},{nombre:"VOZ IA 6",fecha:"diciembre",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:3.8,hook:34,thruplay:0,ret100:23,notas:""},{nombre:"001_HCABALLO_BENJA",fecha:"ENERO",creador:"BENJAMIN",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"002_LOCUHORSE_FABRIZIO",fecha:"ENERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:14,hook:31,thruplay:0,ret100:4,notas:"se apagó"},{nombre:"003_MUCHAS PERSONAS_TONY",fecha:"ENERO",creador:"TONY",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"004_RETIMY_BENJA",fecha:"ENERO",creador:"BENJAMIN",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"005_JOSUÉHORSE_FABRI",fecha:"ENERO",creador:"FABRIZIO",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"006_STEFY_BENJA",fecha:"ENERO",creador:"BENJAMIN",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"008_TEFY HOOK 1_TONY",fecha:"ENERO",creador:"TONY",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"009_STEFY_BENJA",fecha:"DICIEMBRE",creador:"BENJAMIN",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"010_chika ra_TONY",fecha:"ENERO",creador:"TONY",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"012_NIKOL_BENJA",fecha:"ENERO",creador:"BENJAMIN",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"013_NIKOL_TONY",fecha:"ENERO",creador:"TONY",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"1 día de"},{nombre:"014_NO DESLICES",fecha:"DICIEMBRE",creador:"BENJAMIN",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"015_INICIO KEY 2",fecha:"DICIEMBRE",creador:"FABRIZIO",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"016_QUIEN DICE QUE TENER",fecha:"DICIEMBRE",creador:"BENJAMIN",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"018_OASIS_TONY",fecha:"DICIEMBRE",creador:"TONY",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"019_OASIS 4 NEW",fecha:"diciembre",creador:"TONY",cuenta:"INM OASIS 4",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"020_OASIS 2 NEW",fecha:"diciembre",creador:"TONY",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"021_OASIS 4 P1 NEW",fecha:"diciembre",creador:"TONY",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"022_OASIS 4 P2 NEW",fecha:"diciembre",creador:"TONY",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"023_ATOM VER2 1",fecha:"diciembre",creador:"ATOM",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"024_ATOM VER2 4",fecha:"diciembre",creador:"ATOM",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"026_ATOM VER 5",fecha:"DICIEMBRE",creador:"ATOM",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"027_OASIS 7 - NUEVO HOOK",fecha:"DICIEMBRE",creador:"TONY",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"027_ATOM VER 5",fecha:"DICIEMBRE",creador:"ATOM",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"028_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"028_ATOM VER2 6",fecha:"diciembre",creador:"ATOM",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"029_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"032_atom",fecha:"ENERO",creador:"ATOM",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"acompaña"},{nombre:"033_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"035_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 3",activa:true,cpl:34,hook:23,thruplay:11.8,ret100:2,notas:"se apagó"},{nombre:"037_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"038_atom",fecha:"ENERO",creador:"ATOM",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"040_TENIS NIKOL",fecha:"ENERO",creador:"FABRIZIO",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"041_VIDEO 1",fecha:"DICIEMBRE",creador:"FABRIZIO",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"042_VIDEO 2",fecha:"DICIEMBRE",creador:"FABRIZIO",cuenta:"INM OASIS 3",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"043_TESTIS VALER",fecha:"ENERO",creador:"TONY",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"044_SELFIE BENJA 1",fecha:"FEBRERO",creador:"BENJAMIN",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"045_INGENIERO 1",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"046_NIKOL LIMPIO",fecha:"FEBRERO",creador:"TONY",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"hook?"},{nombre:"048_CASA 3D KEY",fecha:"FEBRERO",creador:"BENJAMIN",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"049_EXCLUSIVIDAD",fecha:"FEBRERO",creador:"TONY",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"050_CHICA 2",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"053_TESTIPAUTA 1",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"054_TESTIPUATA 3",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"057_INTERPAUTA 1",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"058_INTERPAUTA 2",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"059_INTERPAUTA 3",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"060_INTERPAUTA 4",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"061_CEVICHE IA",fecha:"FEBRERO",creador:"FABRIZIO",cuenta:"INM OASIS 1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"1_ATOM E2",fecha:"DICIEMBRE",creador:"ATOM",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"2_atom_VALERIA interview",fecha:"DICIEMBRE",creador:"ATOM",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"5_ATOM",fecha:"diciembre",creador:"ATOM",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"6_ATOM",fecha:"DICIEMBRE",creador:"ATOM",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"tomar hook"},{nombre:"ADS 2",fecha:"DICIEMBRE",creador:"ATOM",cuenta:"PALMERAS 2.1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"ADS 3",fecha:"diciembre",creador:"ATOM",cuenta:"PALMERAS 2.1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"AQUI EN EL OASIS",fecha:"diciembre",creador:"BENJAMIN",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"AZUCENA SHINY",fecha:"diciembre",creador:"FABRIZIO",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"CONSTRUYE BANJEMIN",fecha:"DICIEMBRE",creador:"BENJAMIN",cuenta:"OASIS INMB",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"CONSTRUYE LA CASA",fecha:"DICIEMBRE",creador:"BENJAMIN",cuenta:"ELEVA INMOB.",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"TENEMOS LOTES",fecha:"diciembre",creador:"FABRIZIO",cuenta:"INM OASIS 4",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:"corr precio"},{nombre:"TENEMOS LOTES 2",fecha:"DICIEMBRE",creador:"FABRIZIO",cuenta:"PALMERAS 2.1",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""},{nombre:"069_EXPERIENCIA 2",fecha:"FEBRERO",creador:"BENJAMIN",cuenta:"",activa:true,cpl:0,hook:0,thruplay:0,ret100:0,notas:""}];
+
+        let pautas = datosIniciales.map((item, index) => ({ ...item, id: index, leads: item.leads || 0 }));
+        let fechasEspecificas = {
+            "26 de febrero": pautas.map(p => ({ ...p }))
+        };
+        let fechaActual = "26 de febrero";
+        let ordenActual = { columna: null, direccion: "asc" };
+        let chartsInstances = {};
+
+        function getCreatorClass(creador) {
+            const clases = {
+                "TONY": "creator-tony",
+                "FABRIZIO": "creator-fabrizio",
+                "BENJAMIN": "creator-benjamin",
+                "ATOM": "creator-atom"
+            };
+            return clases[creador] || "";
+        }
+
+        function getAccountClass(cuenta) {
+            if (cuenta.includes("OASIS 1")) return "account-oasis1";
+            if (cuenta.includes("OASIS 3")) return "account-oasis3";
+            if (cuenta.includes("OASIS 4")) return "account-oasis4";
+            if (cuenta.includes("OASIS INMB") || cuenta.includes("ELEVA")) return "account-oasis-inmb";
+            if (cuenta.includes("PALMERAS")) return "account-palmeras";
+            return "";
+        }
+
+        function getDragonScore(pauta) {
+            return (pauta.hook || 0) + (pauta.thruplay || 0) - (pauta.cpl || 0) / 10;
+        }
+
+        function getDragonRank(pauta) {
+            const scores = pautas.map(p => ({ id: p.id, score: getDragonScore(p) })).sort((a, b) => b.score - a.score);
+            return scores.findIndex(item => item.id === pauta.id) + 1;
+        }
+
+        function getGemaEmoji(rank) {
+            if (rank === 1) return '💎';
+            if (rank === 2) return '👑';
+            if (rank === 3) return '🥉';
+            if (rank <= 10) return '⭐';
+            return '✨';
+        }
+
+        function ordenarTabla(columna) {
+            if (ordenActual.columna === columna) {
+                ordenActual.direccion = ordenActual.direccion === "asc" ? "desc" : "asc";
+            } else {
+                ordenActual.columna = columna;
+                ordenActual.direccion = "asc";
+            }
+
+            pautas.sort((a, b) => {
+                let valA = a[columna];
+                let valB = b[columna];
+
+                if (typeof valA === "number" && typeof valB === "number") {
+                    return ordenActual.direccion === "asc" ? valA - valB : valB - valA;
+                }
+
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+                return ordenActual.direccion === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            });
+
+            actualizarTabla();
+            actualizarGraficos();
+        }
+
+        function actualizarTabla() {
+            const buscador = document.getElementById("buscador").value.toLowerCase();
+            const filtroCreador = document.getElementById("filtroCreador").value;
+            const filtroEstado = document.getElementById("filtroEstado").value;
+
+            let filtrados = pautas.filter(p => {
+                const coincideBusqueda = p.nombre.toLowerCase().includes(buscador) ||
+                    p.cuenta.toLowerCase().includes(buscador) ||
+                    p.creador.toLowerCase().includes(buscador);
+
+                const coincideCreador = !filtroCreador || p.creador === filtroCreador;
+                const coincideEstado = !filtroEstado ||
+                    (filtroEstado === "activa" && p.activa) ||
+                    (filtroEstado === "inactiva" && !p.activa);
+
+                return coincideBusqueda && coincideCreador && coincideEstado;
+            });
+
+            // Aplicar ordenamiento si existe
+            if (ordenActual.columna) {
+                filtrados.sort((a, b) => {
+                    let valA = a[ordenActual.columna];
+                    let valB = b[ordenActual.columna];
+
+                    if (typeof valA === "number" && typeof valB === "number") {
+                        return ordenActual.direccion === "asc" ? valA - valB : valB - valA;
+                    }
+
+                    valA = String(valA).toLowerCase();
+                    valB = String(valB).toLowerCase();
+                    return ordenActual.direccion === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                });
+            }
+
+            renderizarTabla(filtrados);
+        }
+
+        function renderizarTabla(pautasAMostrar) {
+            const tbody = document.getElementById("cuerpoTabla");
+
+            if (pautasAMostrar.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <p>Sin resultados</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = pautasAMostrar.map(pauta => {
+                const rank = getDragonRank(pauta);
+                const gema = getGemaEmoji(rank);
+                const isBest = rank <= 10;
+
+                return `
+                    <tr ${isBest ? 'class="best-performer"' : ''}>
+                        <td><strong>${gema} ${pauta.nombre}</strong></td>
+                        <td class="editable-cell">
+                            <select class="cell-select" onchange="cambiarFecha(${pauta.id}, this.value)">
+                                <option value="" ${pauta.fecha === "" ? "selected" : ""}>—</option>
+                                <option value="ENERO" ${pauta.fecha === "ENERO" ? "selected" : ""}>ENERO</option>
+                                <option value="FEBRERO" ${pauta.fecha === "FEBRERO" ? "selected" : ""}>FEBRERO</option>
+                                <option value="MARZO" ${pauta.fecha === "MARZO" ? "selected" : ""}>MARZO</option>
+                                <option value="ABRIL" ${pauta.fecha === "ABRIL" ? "selected" : ""}>ABRIL</option>
+                                <option value="MAYO" ${pauta.fecha === "MAYO" ? "selected" : ""}>MAYO</option>
+                                <option value="JUNIO" ${pauta.fecha === "JUNIO" ? "selected" : ""}>JUNIO</option>
+                                <option value="JULIO" ${pauta.fecha === "JULIO" ? "selected" : ""}>JULIO</option>
+                                <option value="AGOSTO" ${pauta.fecha === "AGOSTO" ? "selected" : ""}>AGOSTO</option>
+                                <option value="SEPTIEMBRE" ${pauta.fecha === "SEPTIEMBRE" ? "selected" : ""}>SEPTIEMBRE</option>
+                                <option value="OCTUBRE" ${pauta.fecha === "OCTUBRE" ? "selected" : ""}>OCTUBRE</option>
+                                <option value="NOVIEMBRE" ${pauta.fecha === "NOVIEMBRE" ? "selected" : ""}>NOVIEMBRE</option>
+                                <option value="DICIEMBRE" ${pauta.fecha === "DICIEMBRE" ? "selected" : ""}>DICIEMBRE</option>
+                            </select>
+                        </td>
+                        <td class="editable-cell">
+                            <select class="cell-select ${getCreatorClass(pauta.creador)}" onchange="cambiarCreador(${pauta.id}, this.value)">
+                                <option value="TONY" ${pauta.creador === "TONY" ? "selected" : ""}>TONY</option>
+                                <option value="FABRIZIO" ${pauta.creador === "FABRIZIO" ? "selected" : ""}>FABRIZIO</option>
+                                <option value="BENJAMIN" ${pauta.creador === "BENJAMIN" ? "selected" : ""}>BENJAMIN</option>
+                                <option value="ATOM" ${pauta.creador === "ATOM" ? "selected" : ""}>ATOM</option>
+                            </select>
+                        </td>
+                        <td class="editable-cell">
+                            <select class="cell-select ${getAccountClass(pauta.cuenta)}" onchange="cambiarCuenta(${pauta.id}, this.value)">
+                                <option value="" ${pauta.cuenta === "" ? "selected" : ""}>—</option>
+                                <option value="INM OASIS 1" ${pauta.cuenta === "INM OASIS 1" ? "selected" : ""}>INM OASIS 1</option>
+                                <option value="INM OASIS 3" ${pauta.cuenta === "INM OASIS 3" ? "selected" : ""}>INM OASIS 3</option>
+                                <option value="INM OASIS 4" ${pauta.cuenta === "INM OASIS 4" ? "selected" : ""}>INM OASIS 4</option>
+                                <option value="OASIS INMB" ${pauta.cuenta === "OASIS INMB" ? "selected" : ""}>OASIS INMB</option>
+                                <option value="ELEVA INMOB." ${pauta.cuenta === "ELEVA INMOB." ? "selected" : ""}>ELEVA INMOB.</option>
+                                <option value="PALMERAS 2.1" ${pauta.cuenta === "PALMERAS 2.1" ? "selected" : ""}>PALMERAS 2.1</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="badge ${pauta.activa ? 'status-active' : 'status-inactive'}" onclick="alternarEstado(${pauta.id})" style="border: none; cursor: pointer; width: 100%; padding: 8px 12px;">
+                                ${pauta.activa ? '✓ Activa' : '○ Inactiva'}
+                            </button>
+                        </td>
+                        <td class="editable-cell">
+                            <div style="display: flex; align-items: center; position: relative;">
+                                <input type="number" class="cell-input" value="${pauta.cpl}" step="0.1" onchange="cambiarValor(${pauta.id}, 'cpl', this.value)" placeholder="0" style="padding-right: 30px;">
+                                <span style="position: absolute; right: 12px; color: var(--text-secondary);">s/</span>
+                            </div>
+                        </td>
+                        <td class="editable-cell">
+                            <div style="display: flex; align-items: center; position: relative;">
+                                <input type="number" class="cell-input" value="${pauta.hook}" min="0" max="100" onchange="cambiarValor(${pauta.id}, 'hook', this.value)" placeholder="%" style="padding-right: 30px;">
+                                <span style="position: absolute; right: 12px; color: var(--text-secondary);">%</span>
+                            </div>
+                        </td>
+                        <td class="editable-cell">
+                            <div style="display: flex; align-items: center; position: relative;">
+                                <input type="number" class="cell-input" value="${pauta.thruplay}" min="0" max="100" step="0.1" onchange="cambiarValor(${pauta.id}, 'thruplay', this.value)" placeholder="%" style="padding-right: 30px;">
+                                <span style="position: absolute; right: 12px; color: var(--text-secondary);">%</span>
+                            </div>
+                        </td>
+                        <td class="editable-cell">
+                            <div style="display: flex; align-items: center; position: relative;">
+                                <input type="number" class="cell-input" value="${pauta.ret100}" min="0" max="100" onchange="cambiarValor(${pauta.id}, 'ret100', this.value)" placeholder="%" style="padding-right: 30px;">
+                                <span style="position: absolute; right: 12px; color: var(--text-secondary);">%</span>
+                            </div>
+                        </td>
+                        <td class="editable-cell">
+                            <input type="number" class="cell-input" value="${pauta.leads}" min="0" onchange="cambiarValor(${pauta.id}, 'leads', this.value)" placeholder="Leads">
+                        </td>
+                        <td class="editable-cell">
+                            <input type="text" class="cell-input" value="${pauta.notas || ''}" onchange="cambiarNota(${pauta.id}, this.value)" placeholder="Notas...">
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn-action btn-delete" onclick="eliminarPauta(${pauta.id})" title="Eliminar">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function actualizarValoresSinReordenar() {
+            const buscador = document.getElementById("buscador").value.toLowerCase();
+            const filtroCreador = document.getElementById("filtroCreador").value;
+            const filtroEstado = document.getElementById("filtroEstado").value;
+
+            let filtrados = pautas.filter(p => {
+                const coincideBusqueda = p.nombre.toLowerCase().includes(buscador) ||
+                    p.cuenta.toLowerCase().includes(buscador) ||
+                    p.creador.toLowerCase().includes(buscador);
+
+                const coincideCreador = !filtroCreador || p.creador === filtroCreador;
+                const coincideEstado = !filtroEstado ||
+                    (filtroEstado === "activa" && p.activa) ||
+                    (filtroEstado === "inactiva" && !p.activa);
+
+                return coincideBusqueda && coincideCreador && coincideEstado;
+            });
+
+            // NO aplicar ordenamiento - mantener el orden actual
+            renderizarTabla(filtrados);
+        }
+
+        function cambiarCreador(id, nuevoCreador) {
+            const pauta = pautas.find(p => p.id === id);
+            if (pauta) {
+                pauta.creador = nuevoCreador;
+                actualizarTabla();
+                actualizarEstadisticas();
+                actualizarGraficos();
+            }
+        }
+
+        function cambiarFecha(id, nuevaFecha) {
+            const pauta = pautas.find(p => p.id === id);
+            if (pauta) {
+                pauta.fecha = nuevaFecha;
+                actualizarTabla();
+                actualizarEstadisticas();
+                actualizarGraficos();
+            }
+        }
+
+        function cambiarCuenta(id, nuevaCuenta) {
+            const pauta = pautas.find(p => p.id === id);
+            if (pauta) {
+                pauta.cuenta = nuevaCuenta;
+                actualizarTabla();
+                actualizarEstadisticas();
+                actualizarGraficos();
+            }
+        }
+
+        function cambiarValor(id, campo, valor) {
+            const pauta = pautas.find(p => p.id === id);
+            if (pauta) {
+                let numValor = parseFloat(valor) || 0;
+                
+                // Validar que los porcentajes (hook y thruplay) no superen 100
+                if (['hook', 'thruplay'].includes(campo)) {
+                    numValor = Math.max(0, Math.min(100, numValor));
+                }
+                
+                // ret100 puede ser mayor a 100, solo validar que no sea negativo
+                if (campo === 'ret100') {
+                    numValor = Math.max(0, numValor);
+                }
+                
+                pauta[campo] = numValor;
+                actualizarValoresSinReordenar();
+                actualizarEstadisticas();
+                actualizarGraficos();
+            }
+        }
+
+        function cambiarNota(id, nuevaNota) {
+            const pauta = pautas.find(p => p.id === id);
+            if (pauta) {
+                pauta.notas = nuevaNota;
+                actualizarValoresSinReordenar();
+            }
+        }
+
+        function alternarEstado(id) {
+            const pauta = pautas.find(p => p.id === id);
+            if (pauta) {
+                pauta.activa = !pauta.activa;
+                actualizarTabla();
+                actualizarEstadisticas();
+                actualizarGraficos();
+            }
+        }
+
+        function eliminarPauta(id) {
+            if (confirm("¿Eliminar esta pauta?")) {
+                pautas = pautas.filter(p => p.id !== id);
+                actualizarTabla();
+                actualizarEstadisticas();
+                actualizarGraficos();
+            }
+        }
+
+        function actualizarEstadisticas() {
+            const total = pautas.length;
+            const activas = pautas.filter(p => p.activa).length;
+            const conCPL = pautas.filter(p => p.cpl > 0);
+            const cplPromedio = conCPL.length > 0 ? (conCPL.reduce((s, p) => s + p.cpl, 0) / conCPL.length).toFixed(2) : "0.00";
+            const hookPromedio = total > 0 ? (pautas.filter(p => p.hook > 0).reduce((s, p) => s + p.hook, 0) / total).toFixed(1) : "0";
+            const totalLeads = pautas.reduce((s, p) => s + (p.ret100 || 0), 0);
+            const tasaExito = total > 0 ? Math.round((activas / total) * 100) : 0;
+
+            const html = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Pautas</div>
+                    <div class="stat-value">${total}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Activas</div>
+                    <div class="stat-value">${activas}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">CPL Promedio</div>
+                    <div class="stat-value">s/${cplPromedio}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Hook Promedio</div>
+                    <div class="stat-value">${hookPromedio}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Leads 🎯</div>
+                    <div class="stat-value">${totalLeads}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Tasa Éxito ⚡</div>
+                    <div class="stat-value">${tasaExito}%</div>
+                </div>
+            `;
+
+            document.getElementById("estadisticas").innerHTML = html;
+        }
+
+        function actualizarGraficos() {
+            const creadores = ["TONY", "FABRIZIO", "BENJAMIN", "ATOM"];
+            const datosCreadores = creadores.map(c => {
+                const pautasCreador = pautas.filter(p => p.creador === c);
+                return {
+                    creador: c,
+                    activas: pautasCreador.filter(p => p.activa).length,
+                    total: pautasCreador.length,
+                    leads: pautasCreador.reduce((s, p) => s + p.ret100, 0)
+                };
+            });
+
+            const ctx1 = document.getElementById("chartCreadores");
+            if (chartsInstances.creadores) chartsInstances.creadores.destroy();
+            chartsInstances.creadores = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: datosCreadores.map(d => d.creador),
+                    datasets: [
+                        {
+                            label: 'Activas',
+                            data: datosCreadores.map(d => d.activas),
+                            backgroundColor: 'rgba(0, 212, 255, 0.7)',
+                            borderColor: 'rgba(0, 212, 255, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Total',
+                            data: datosCreadores.map(d => d.total),
+                            backgroundColor: 'rgba(45, 90, 78, 0.5)',
+                            borderColor: 'rgba(45, 90, 78, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } },
+                    scales: { y: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } }, x: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } } }
+                }
+            });
+
+            const datosScatter = pautas.filter(p => p.cpl > 0 && p.ret100 > 0).map(p => ({
+                x: p.cpl,
+                y: p.ret100,
+                nombre: p.nombre
+            }));
+
+            const ctx2 = document.getElementById("chartCPLLeads");
+            if (chartsInstances.cplLeads) chartsInstances.cplLeads.destroy();
+            chartsInstances.cplLeads = new Chart(ctx2, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Pautas',
+                        data: datosScatter.map(d => ({ x: d.x, y: d.y, r: 8 })),
+                        backgroundColor: 'rgba(0, 212, 255, 0.6)',
+                        borderColor: 'rgba(0, 212, 255, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } },
+                    scales: { y: { title: { display: true, text: 'Leads', color: '#a8b2c1' }, ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } }, x: { title: { display: true, text: 'CPL', color: '#a8b2c1' }, ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } } }
+                }
+            });
+
+            const activas = pautas.filter(p => p.activa).length;
+            const inactivas = pautas.length - activas;
+
+            const ctx3 = document.getElementById("chartEstados");
+            if (chartsInstances.estados) chartsInstances.estados.destroy();
+            chartsInstances.estados = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Activas', 'Inactivas'],
+                    datasets: [{
+                        data: [activas, inactivas],
+                        backgroundColor: ['rgba(0, 212, 255, 0.8)', 'rgba(149, 165, 166, 0.5)'],
+                        borderColor: ['rgba(0, 212, 255, 1)', 'rgba(149, 165, 166, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } }
+                }
+            });
+
+            const top10 = pautas
+                .sort((a, b) => getDragonScore(b) - getDragonScore(a))
+                .slice(0, 10);
+
+            const ctx4 = document.getElementById("chartTop10");
+            if (chartsInstances.top10) chartsInstances.top10.destroy();
+            chartsInstances.top10 = new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(p => p.nombre.substring(0, 20) + '...'),
+                    datasets: [{
+                        label: 'Score',
+                        data: top10.map(p => getDragonScore(p)),
+                        backgroundColor: 'rgba(255, 107, 107, 0.7)',
+                        borderColor: 'rgba(255, 107, 107, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } },
+                    scales: { x: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } }, y: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } } }
+                }
+            });
+
+            // Gráfico 5: Promedio de Métricas por Creador
+            const metricsCreador = creadores.map(c => {
+                const pautasCreador = pautas.filter(p => p.creador === c);
+                const conDatos = pautasCreador.filter(p => p.cpl > 0 || p.hook > 0 || p.thruplay > 0);
+                return {
+                    creador: c,
+                    cplPromedio: conDatos.length > 0 ? (conDatos.reduce((s, p) => s + p.cpl, 0) / conDatos.length) : 0,
+                    hookPromedio: conDatos.length > 0 ? (conDatos.reduce((s, p) => s + p.hook, 0) / conDatos.length) : 0,
+                    leadsPromedio: pautasCreador.length > 0 ? (pautasCreador.reduce((s, p) => s + p.ret100, 0) / pautasCreador.length) : 0
+                };
+            });
+
+            const ctx5 = document.getElementById("chartMetricasCreador");
+            if (chartsInstances.metricas) chartsInstances.metricas.destroy();
+            chartsInstances.metricas = new Chart(ctx5, {
+                type: 'radar',
+                data: {
+                    labels: ['CPL Prom.', 'Hook %', 'Leads'],
+                    datasets: metricsCreador.map((m, idx) => ({
+                        label: m.creador,
+                        data: [m.cplPromedio, m.hookPromedio, m.leadsPromedio],
+                        borderColor: ['rgba(0, 212, 255, 1)', 'rgba(255, 107, 107, 1)', 'rgba(39, 174, 96, 1)', 'rgba(243, 156, 18, 1)'][idx],
+                        backgroundColor: ['rgba(0, 212, 255, 0.1)', 'rgba(255, 107, 107, 0.1)', 'rgba(39, 174, 96, 0.1)', 'rgba(243, 156, 18, 0.1)'][idx],
+                        borderWidth: 2
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } },
+                    scales: { r: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } } }
+                }
+            });
+
+            // Gráfico 6: Hook vs Thruplay
+            const hookThruplayData = pautas.filter(p => p.hook > 0 || p.thruplay > 0);
+            const ctx6 = document.getElementById("chartHookThruplay");
+            if (chartsInstances.hookThruplay) chartsInstances.hookThruplay.destroy();
+            chartsInstances.hookThruplay = new Chart(ctx6, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Hook vs Thruplay',
+                        data: hookThruplayData.map(p => ({ x: p.hook, y: p.thruplay })),
+                        backgroundColor: 'rgba(0, 212, 255, 0.6)',
+                        borderColor: 'rgba(0, 212, 255, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } },
+                    scales: { 
+                        x: { title: { display: true, text: 'Hook (%)', color: '#a8b2c1' }, min: 0, max: 100, ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } }, 
+                        y: { title: { display: true, text: 'Thruplay (%)', color: '#a8b2c1' }, min: 0, max: 100, ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } } 
+                    }
+                }
+            });
+
+            // Gráfico 7: Pautas por Cuenta
+            const cuentas = ['INM OASIS 1', 'INM OASIS 3', 'INM OASIS 4', 'OASIS INMB', 'ELEVA INMOB.', 'PALMERAS 2.1', 'Sin Cuenta'];
+            const datosCuentas = cuentas.map(c => ({
+                cuenta: c,
+                cantidad: pautas.filter(p => (c === 'Sin Cuenta' ? p.cuenta === '' : p.cuenta === c)).length
+            })).filter(d => d.cantidad > 0);
+
+            const ctx7 = document.getElementById("chartCuentas");
+            if (chartsInstances.cuentas) chartsInstances.cuentas.destroy();
+            chartsInstances.cuentas = new Chart(ctx7, {
+                type: 'doughnut',
+                data: {
+                    labels: datosCuentas.map(d => d.cuenta),
+                    datasets: [{
+                        data: datosCuentas.map(d => d.cantidad),
+                        backgroundColor: [
+                            'rgba(186, 85, 211, 0.7)',
+                            'rgba(50, 205, 50, 0.7)',
+                            'rgba(255, 140, 0, 0.7)',
+                            'rgba(30, 144, 255, 0.7)',
+                            'rgba(0, 212, 255, 0.7)',
+                            'rgba(219, 112, 147, 0.7)',
+                            'rgba(149, 165, 166, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(186, 85, 211, 1)',
+                            'rgba(50, 205, 50, 1)',
+                            'rgba(255, 140, 0, 1)',
+                            'rgba(30, 144, 255, 1)',
+                            'rgba(0, 212, 255, 1)',
+                            'rgba(219, 112, 147, 1)',
+                            'rgba(149, 165, 166, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } }
+                }
+            });
+
+            // Gráfico 8: Pautas por Mes
+            const meses = ['ENERO', 'FEBRERO', 'diciembre', 'DICIEMBRE'];
+            const datosMeses = meses.map(m => ({
+                mes: m,
+                cantidad: pautas.filter(p => p.fecha === m).length
+            })).filter(d => d.cantidad > 0);
+
+            const ctx8 = document.getElementById("chartMeses");
+            if (chartsInstances.meses) chartsInstances.meses.destroy();
+            chartsInstances.meses = new Chart(ctx8, {
+                type: 'bar',
+                data: {
+                    labels: datosMeses.map(d => d.mes),
+                    datasets: [{
+                        label: 'Cantidad de Pautas',
+                        data: datosMeses.map(d => d.cantidad),
+                        backgroundColor: 'rgba(0, 212, 255, 0.7)',
+                        borderColor: 'rgba(0, 212, 255, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#a8b2c1' } } },
+                    scales: { y: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } }, x: { ticks: { color: '#a8b2c1' }, grid: { color: '#2a3a4a' } } }
+                }
+            });
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'tabla') {
+                document.getElementById('tabla-view').style.display = 'block';
+                document.getElementById('analisis-view').classList.remove('active');
+            } else {
+                document.getElementById('tabla-view').style.display = 'none';
+                document.getElementById('analisis-view').classList.add('active');
+                actualizarGraficos();
+            }
+        }
+
+        function toggleCharts() {
+            const section = document.getElementById('analisis-view');
+            section.classList.toggle('active');
+            if (section.classList.contains('active')) {
+                actualizarGraficos();
+            }
+        }
+
+        function exportarCSV() {
+            let csv = "Nombre,Fecha,Creador,Cuenta,Estado,CPL,Hook,Thruplay,Leads,Notas\n";
+            pautas.forEach(p => {
+                csv += `"${p.nombre}","${p.fecha}","${p.creador}","${p.cuenta}","${p.activa ? 'Activa' : 'Inactiva'}",${p.cpl},${p.hook},${p.thruplay},${p.ret100},"${p.notas}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `pautas_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // ===== MODAL NUEVA PAUTA =====
+        function abrirModalNuevapauta() {
+            document.getElementById("modalNuevapauta").classList.add("active");
+        }
+
+        function cerrarModalNuevapauta() {
+            document.getElementById("modalNuevapauta").classList.remove("active");
+            document.getElementById("formularioNuevapauta").reset();
+        }
+
+        function crearNuevapauta(event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById("inputNombre").value.trim();
+            const fecha = document.getElementById("inputFecha").value;
+            const creador = document.getElementById("inputCreador").value;
+            const cuenta = document.getElementById("inputCuenta").value;
+            const activa = document.getElementById("inputActiva").value === "true";
+            const cpl = parseFloat(document.getElementById("inputCpl").value) || 0;
+            const hook = parseFloat(document.getElementById("inputHook").value) || 0;
+            const thruplay = parseFloat(document.getElementById("inputThruplay").value) || 0;
+            const ret100 = parseFloat(document.getElementById("inputRet100").value) || 0;
+            const leads = parseFloat(document.getElementById("inputLeads").value) || 0;
+            const notas = document.getElementById("inputNotas").value.trim();
+
+            if (!nombre) {
+                alert("El nombre de la pauta es requerido");
+                return;
+            }
+
+            // Crear nueva pauta
+            const nuevapauta = {
+                nombre,
+                fecha,
+                creador,
+                cuenta,
+                activa,
+                cpl,
+                hook,
+                thruplay,
+                ret100,
+                leads,
+                notas,
+                id: pautas.length
+            };
+
+            pautas.push(nuevapauta);
+            
+            // Cerrar modal y actualizar
+            cerrarModalNuevapauta();
+            actualizarTabla();
+            actualizarEstadisticas();
+            actualizarGraficos();
+
+            // Mostrar confirmación
+            alert(`✓ Pauta "${nombre}" creada exitosamente`);
+        }
+
+        // ===== FUNCIONES DE FECHAS ESPECÍFICAS =====
+        function actualizarSelectorFechas() {
+            const selector = document.getElementById("selectorFecha");
+            selector.innerHTML = Object.keys(fechasEspecificas).map(f => 
+                `<option value="${f}" ${f === fechaActual ? 'selected' : ''}>${f}</option>`
+            ).join("");
+        }
+
+        function cambiarFechaEspecifica(nuevaFecha) {
+            if (nuevaFecha === "") return;
+            fechaActual = nuevaFecha;
+            pautas = fechasEspecificas[nuevaFecha].map(p => ({ ...p }));
+            actualizarTabla();
+            actualizarEstadisticas();
+            actualizarGraficos();
+        }
+
+        function abrirModalNuevaFecha() {
+            document.getElementById("modalNuevaFecha").classList.add("active");
+        }
+
+        function cerrarModalNuevaFecha() {
+            document.getElementById("modalNuevaFecha").classList.remove("active");
+            document.getElementById("formularioNuevaFecha").reset();
+        }
+
+        function crearNuevaFecha(event) {
+            event.preventDefault();
+
+            const nombreFecha = document.getElementById("inputNombreFecha").value.trim();
+
+            if (!nombreFecha) {
+                alert("El nombre de la fecha es requerido");
+                return;
+            }
+
+            if (fechasEspecificas[nombreFecha]) {
+                alert("Esta fecha ya existe. Elige un nombre diferente.");
+                return;
+            }
+
+            // Crear nueva fecha limpiando solo los valores de métricas
+            const nuevaPautasEnFecha = pautas.map(p => ({
+                ...p,
+                cpl: 0,
+                hook: 0,
+                thruplay: 0,
+                ret100: 0,
+                notas: ""
+            }));
+
+            fechasEspecificas[nombreFecha] = nuevaPautasEnFecha;
+            fechaActual = nombreFecha;
+            pautas = nuevaPautasEnFecha.map(p => ({ ...p }));
+
+            // Cerrar modal y actualizar
+            cerrarModalNuevaFecha();
+            actualizarSelectorFechas();
+            actualizarTabla();
+            actualizarEstadisticas();
+            actualizarGraficos();
+
+            alert(`✓ Fecha "${nombreFecha}" creada exitosamente`);
+        }
+
+        // Cerrar modal al hacer click fuera de él (fecha)
+        window.addEventListener("click", function(event) {
+            const modalFecha = document.getElementById("modalNuevaFecha");
+            if (event.target === modalFecha) {
+                cerrarModalNuevaFecha();
+            }
+        });
+
+        document.getElementById("buscador").addEventListener("input", actualizarTabla);
+        document.getElementById("filtroCreador").addEventListener("change", actualizarTabla);
+        document.getElementById("filtroEstado").addEventListener("change", actualizarTabla);
+
+        actualizarSelectorFechas();
+        actualizarTabla();
+        actualizarEstadisticas();
+    </script>
+</body>
+</html>

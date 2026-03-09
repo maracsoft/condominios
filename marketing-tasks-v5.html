@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Workflow 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1e222d;
+    --border: #2a2f3d;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #f5c842;
+    --accent2: #3d8ef5;
+    --accent3: #a259ff;
+    --green: #2dd4a0;
+    --red: #f5605a;
+    --orange: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  header {
+    padding: 28px 40px 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent) 0%, #ff9d4d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-left p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  /* View tabs */
+  .view-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--surface);
+    padding: 5px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    padding: 8px 18px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover { color: var(--text); background: var(--surface2); }
+  .tab-btn.active {
+    background: var(--accent);
+    color: #0d0f14;
+    font-weight: 700;
+  }
+
+  .tab-icon { font-size: 0.9rem; }
+
+  /* Add task bar */
+  .add-bar {
+    margin: 20px 40px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+  }
+
+  .add-bar input, .add-bar select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .add-bar input:focus, .add-bar select:focus { border-color: var(--accent); }
+
+  .add-bar input.task-name { flex: 1; min-width: 180px; }
+
+  .add-bar select option { background: var(--surface2); }
+
+  .btn-add {
+    background: var(--accent);
+    color: #0d0f14;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-add:hover { opacity: 0.88; transform: scale(1.03); }
+  .btn-add:active { transform: scale(0.97); }
+
+  /* Main content */
+  .content { padding: 0 40px 40px; }
+
+  /* ---- KANBAN ---- */
+  .kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  .kanban-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 300px;
+  }
+
+  .col-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .col-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .col-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex: 1;
+  }
+
+  .col-count {
+    background: var(--surface2);
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .kanban-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kanban-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    border-color: #3a3f50;
+  }
+
+  .card-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .badge-alta { background: rgba(245,96,90,0.15); color: var(--red); }
+  .badge-media { background: rgba(245,158,11,0.15); color: var(--orange); }
+  .badge-baja { background: rgba(45,212,160,0.15); color: var(--green); }
+
+  .assignee {
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .avatar {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0d0f14;
+  }
+
+  /* ---- GANTT ---- */
+  .gantt-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+
+  .gantt-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+  }
+
+  .gantt-table th {
+    background: var(--surface2);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .gantt-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.84rem;
+    vertical-align: middle;
+  }
+
+  .gantt-table tr:last-child td { border-bottom: none; }
+  .gantt-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .gantt-bar-cell { min-width: 280px; }
+
+  .gantt-timeline {
+    position: relative;
+    height: 26px;
+    background: var(--surface2);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .gantt-bar {
+    position: absolute;
+    top: 3px; bottom: 3px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #0d0f14;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 0.2s;
+  }
+
+  .gantt-bar:hover { opacity: 0.85; }
+
+  /* ---- LIST ---- */
+  .list-wrap {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .list-filters {
+    display: flex;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 500;
+    margin-right: 4px;
+  }
+
+  .filter-chip {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active { background: var(--accent); color: #0d0f14; border-color: var(--accent); font-weight: 700; }
+
+  .list-table { width: 100%; border-collapse: collapse; }
+
+  .list-table th {
+    background: var(--surface2);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .list-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    vertical-align: middle;
+  }
+
+  .list-table tr:last-child td { border-bottom: none; }
+  .list-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .priority-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  /* ---- CALENDAR ---- */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-day-header {
+    text-align: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    padding: 8px 0;
+  }
+
+  .cal-cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-height: 90px;
+    padding: 8px;
+    font-size: 0.78rem;
+    transition: border-color 0.15s;
+    cursor: default;
+  }
+
+  .cal-cell:hover { border-color: #3a3f50; }
+  .cal-cell.empty { background: transparent; border-color: transparent; }
+  .cal-cell.today { border-color: var(--accent); }
+
+  .cal-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .cal-cell.today .cal-num {
+    background: var(--accent);
+    color: #0d0f14;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .cal-task {
+    font-size: 0.66rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+
+  /* Drag & Drop */
+  .kanban-card.dragging {
+    opacity: 0.35;
+    transform: scale(0.97) rotate(1deg);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    cursor: grabbing !important;
+  }
+
+  .drop-zone.drag-over {
+    background: rgba(245,200,66,0.06);
+    border-color: var(--accent);
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .drop-zone.drag-over .col-title {
+    opacity: 1;
+  }
+
+  .empty-col-hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 30px 0;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    margin-top: 4px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .drop-zone.drag-over .empty-col-hint {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Animations */
+  .view-panel { animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kanban-card { animation: cardIn 0.2s ease backwards; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    margin: 0 40px 16px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stat-num {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+  }
+
+  .stat-label { color: var(--muted); font-size: 0.75rem; }
+
+  /* Delete btn */
+
+  .btn-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    line-height: 1;
+    opacity: 0.6;
+  }
+  .btn-edit:hover { opacity: 1; background: rgba(245,200,66,0.12); }
+
+  .btn-del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+  }
+
+  .btn-del:hover { color: var(--red); background: rgba(245,96,90,0.1); }
+
+  /* View description badge */
+  .view-desc {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin: 0 40px 14px;
+  }
+
+  .view-desc span { color: var(--accent); font-weight: 600; }
+
+  @media (max-width: 700px) {
+    header, .add-bar, .content, .stats-bar, .view-desc { padding-left: 16px; padding-right: 16px; margin-left: 0; margin-right: 0; }
+    .kanban-board { grid-template-columns: 1fr; }
+    header { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* Toast */
+  #save-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--green);
+    color: #0d0f14;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 10px 20px;
+    border-radius: 10px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #save-toast.show { opacity: 1; transform: translateY(0); }
+
+  .btn-clear {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-clear:hover { border-color: var(--red); color: var(--red); }
+
+  .btn-export {
+    background: linear-gradient(135deg, #3d8ef5, #a259ff);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-export:hover { opacity: 0.88; transform: scale(1.02); }
+  .btn-export:active { transform: scale(0.97); }
+
+
+
+
+  /* Calendar drag & drop */
+  .cal-task.cal-dragging {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+
+  .cal-drop-zone.cal-drag-over {
+    background: rgba(245,200,66,0.08) !important;
+    border-color: var(--accent) !important;
+  }
+
+  .cal-drop-zone.cal-drag-over .cal-num {
+    color: var(--accent);
+  }
+
+  /* Edit Modal */
+  #edit-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #edit-modal.open { display: flex; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--accent);
+  }
+
+  .modal-field {
+    margin-bottom: 14px;
+  }
+
+  .modal-field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .modal-field input, .modal-field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 9px 12px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  .modal-field input:focus, .modal-field select:focus { border-color: var(--accent); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-cancel:hover { border-color: var(--text); color: var(--text); }
+
+  .btn-save {
+    background: var(--accent);
+    color: #0d0f14;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 24px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+
+  /* ---- VENCIDAS ---- */
+  .kanban-card.vencida { background: rgba(245,96,90,0.10); border-color: rgba(245,96,90,0.35); }
+  .kanban-card.vencida:hover { border-color: rgba(245,96,90,0.6); box-shadow: 0 8px 24px rgba(245,96,90,0.15); }
+  .vencida-badge { font-size:0.62rem;background:rgba(245,96,90,0.2);color:var(--red);border:1px solid rgba(245,96,90,0.3);border-radius:20px;padding:1px 7px;font-weight:700;letter-spacing:0.03em; }
+  tr.row-vencida td { background: rgba(245,96,90,0.07) !important; }
+  tr.row-vencida:hover td { background: rgba(245,96,90,0.12) !important; }
+  .cal-cell.cal-vencida { border-color: rgba(245,96,90,0.4); background: rgba(245,96,90,0.07); }
+
+  /* ---- NOTAS ---- */
+  .note-icon { display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(61,142,245,0.15);color:var(--accent2);font-size:0.65rem;cursor:pointer;position:relative;flex-shrink:0;border:1px solid rgba(61,142,245,0.25);transition:background 0.15s; }
+  .note-icon:hover { background: rgba(61,142,245,0.28); }
+  .note-tooltip { display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1f2e;border:1px solid rgba(61,142,245,0.3);border-radius:8px;padding:8px 12px;font-size:0.75rem;color:var(--text);white-space:pre-wrap;max-width:220px;min-width:120px;z-index:500;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,0.4);text-align:left;font-weight:400;pointer-events:none; }
+  .note-icon:hover .note-tooltip { display: block; }
+  .modal-field textarea { width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;padding:9px 12px;outline:none;transition:border 0.2s;resize:vertical;min-height:72px;line-height:1.5; }
+  .modal-field textarea:focus { border-color: var(--accent); }
+  .free-badge { font-size:0.62rem;background:rgba(245,158,11,0.15);color:var(--orange);border:1px solid rgba(245,158,11,0.3);border-radius:20px;padding:1px 7px;font-weight:700;letter-spacing:0.03em; }
+  .daysoff-warning { background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:8px 12px;font-size:0.78rem;color:var(--orange);margin-top:8px;display:none; }
+  .daysoff-warning.show { display: block; }
+
+  /* ---- DÍAS LIBRES PANEL ---- */
+  .daysoff-panel { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:20px; }
+  .daysoff-person-block { margin-bottom:20px; }
+  .daysoff-person-block:last-child { margin-bottom:0; }
+  .daysoff-person-label { display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px; }
+  .daysoff-person-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+  .daysoff-days-grid { display:flex;flex-wrap:wrap;gap:5px; }
+  .daysoff-day-btn { width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:0.7rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .daysoff-day-btn:hover { border-color:#3a3f50;color:var(--text); }
+  .daysoff-day-btn.selected { color:#0d0f14;font-weight:800;border-color:transparent; }
+  .cal-daysoff-row { display:flex;gap:2px;margin-top:3px;flex-wrap:wrap; }
+  .cal-free-dot { width:6px;height:6px;border-radius:50%;opacity:0.55;flex-shrink:0; }
+
+  /* ---- RENDIMIENTO ---- */
+  .rend-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .rend-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .rend-person-card {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rend-person-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .rend-person-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .rend-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0d0f14;
+    flex-shrink: 0;
+  }
+
+  .rend-person-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .rend-person-sub {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .rend-big-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .rend-big-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  .rend-mini-stats {
+    display: flex;
+    gap: 14px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .rend-mini-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rend-mini-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .rend-mini-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Barra de progreso persona */
+  .rend-progress-bar {
+    height: 5px;
+    background: var(--surface2);
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .rend-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  /* Tabla de tareas completadas */
+  .rend-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .rend-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .rend-table-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .rend-filter-tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rend-tab {
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .rend-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .rend-tab.active { background: var(--accent); color: #0d0f14; border-color: var(--accent); }
+
+  .rend-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .rend-table th {
+    background: var(--surface2);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rend-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.83rem;
+    vertical-align: middle;
+  }
+
+  .rend-table tr:last-child td { border-bottom: none; }
+  .rend-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .done-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: rgba(45,212,160,0.12);
+    color: var(--green);
+    border: 1px solid rgba(45,212,160,0.25);
+  }
+
+  @media (max-width: 700px) {
+    .rend-cards { grid-template-columns: 1fr; }
+  }
+
+  /* Month selector */
+  .month-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px 10px 6px 14px;
+  }
+
+  .month-selector select {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    outline: none;
+    letter-spacing: -0.01em;
+  }
+
+  .month-selector select option { background: var(--surface2); color: var(--text); }
+
+  .month-selector .year-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 400;
+    border-left: 1px solid var(--border);
+    padding-left: 8px;
+    margin-left: 2px;
+  }
+
+  .month-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Marketing Workflow 2026</h1>
+    <p id="header-sub">Marzo 2026 — Gestión visual de tareas del equipo</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div class="month-selector">
+      <div class="month-dot"></div>
+      <select id="month-select" onchange="switchMonth(this.value)">
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3" selected>Marzo</option>
+        <option value="4">Abril</option>
+        <option value="5">Mayo</option>
+        <option value="6">Junio</option>
+        <option value="7">Julio</option>
+        <option value="8">Agosto</option>
+        <option value="9">Septiembre</option>
+        <option value="10">Octubre</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre</option>
+      </select>
+      <span class="year-label" id="year-label">2026</span>
+    </div>
+    <div class="view-tabs">
+      <button class="tab-btn active" onclick="switchView('kanban')" id="tab-kanban">
+        <span class="tab-icon">⬛</span> Kanban
+      </button>
+      <button class="tab-btn" onclick="switchView('gantt')" id="tab-gantt">
+        <span class="tab-icon">📊</span> Gantt
+      </button>
+      <button class="tab-btn" onclick="switchView('list')" id="tab-list">
+        <span class="tab-icon">☰</span> Lista
+      </button>
+      <button class="tab-btn" onclick="switchView('calendar')" id="tab-calendar">
+        <span class="tab-icon">📅</span> Calendario
+      </button>
+      <button class="tab-btn" onclick="switchView('daysoff')" id="tab-daysoff">
+        <span class="tab-icon">🏖</span> Días libres
+      </button>
+      <button class="tab-btn" onclick="switchView('rendimiento')" id="tab-rendimiento">
+        <span class="tab-icon">✅</span> Rendimiento
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Add task bar -->
+<div class="add-bar">
+  <input class="task-name" id="in-name" type="text" placeholder="Nombre de la tarea..." onkeydown="if(event.key==='Enter')addTask()">
+  <select id="in-person" style="width:130px">
+    <option value="TONY">🟢 TONY</option>
+    <option value="BENJA">🟣 BENJA</option>
+    <option value="FABRI">🔵 FABRI</option>
+  </select>
+  <select id="in-estado">
+    <option value="pendiente">Pendiente</option>
+    <option value="progreso">En progreso</option>
+    <option value="listo">Listo ✓</option>
+  </select>
+  <select id="in-prioridad">
+    <option value="alta">🔴 Alta</option>
+    <option value="media">🟡 Media</option>
+    <option value="baja">🟢 Baja</option>
+  </select>
+  <input id="in-dia" type="number" placeholder="Día inicio" min="1" max="31" style="width:100px">
+  <button class="btn-add" onclick="addTask()">+ Agregar tarea</button>
+  <button class="btn-clear" onclick="toggleSearch()" title="Buscar tarea" style="background:none;border:1px solid var(--border);color:var(--muted)">🔍 Buscar</button>
+  <button class="btn-clear" onclick="clearAllTasks()">🗑 Limpiar todo</button>
+  <button class="btn-export" onclick="exportSnapshot()">📤 Exportar para compartir</button>
+</div>
+
+<!-- Toast -->
+<div id="save-toast">✓ Guardado</div>
+
+<!-- Buscador rápido -->
+<div id="search-bar" style="display:none;padding:0 40px;margin-bottom:0">
+  <div style="position:relative;max-width:480px">
+    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.9rem;pointer-events:none">🔍</span>
+    <input id="search-input" type="text" placeholder="Buscar tarea por nombre..." 
+      style="width:100%;background:var(--surface);border:1px solid var(--accent);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;padding:9px 12px 9px 36px;outline:none;"
+      oninput="onSearch(this.value)" onkeydown="if(event.key==='Escape'){closeSearch()}">
+    <button onclick="closeSearch()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;padding:2px 5px">✕</button>
+  </div>
+  <div id="search-results" style="max-width:480px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-top:6px;overflow:hidden;display:none"></div>
+</div>
+
+<!-- Notificaciones bubble -->
+<div id="notif-bubble" style="display:none;margin:10px 40px 0;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:0.78rem;color:var(--muted)"></div>
+
+<!-- Stats -->
+<div class="stats-bar" id="stats-bar"></div>
+
+<!-- View description -->
+<div class="view-desc" id="view-desc">
+  <span>⬛ Seguimiento</span> — Arrastra mentalmente las tarjetas entre columnas por estado
+</div>
+
+<!-- Content -->
+<div class="content" id="main-content"></div>
+
+<script>
+// ---- DATA ----
+const COLORS = {
+  pendiente: '#f5c842',
+  progreso: '#3d8ef5',
+  listo: '#2dd4a0'
+};
+
+const PERSON_COLORS = { 'TONY': '#2dd4a0', 'BENJA': '#a259ff', 'FABRI': '#3d8ef5' };
+const AVATAR_COLORS = ['#f5c842','#3d8ef5','#a259ff','#2dd4a0','#f5605a','#f59e0b'];
+
+const DEFAULT_TASKS = [
+  { id:1, name:'Campaña email — newsletter mensual', person:'FABRI', estado:'progreso', prioridad:'alta', dia:2 },
+  { id:2, name:'Publicación redes sociales — lanzamiento producto', person:'TONY', estado:'pendiente', prioridad:'alta', dia:5 },
+  { id:3, name:'Análisis SEO keywords Q1', person:'BENJA', estado:'listo', prioridad:'media', dia:1 },
+  { id:4, name:'Diseño banner promocional', person:'FABRI', estado:'progreso', prioridad:'media', dia:8 },
+  { id:5, name:'Reporte métricas febrero', person:'TONY', estado:'listo', prioridad:'baja', dia:3 },
+  { id:6, name:'Estrategia contenido blog', person:'TONY', estado:'pendiente', prioridad:'alta', dia:12 },
+  { id:7, name:'Coordinación con agencia publicidad', person:'BENJA', estado:'pendiente', prioridad:'media', dia:15 },
+  { id:8, name:'A/B test landing page', person:'TONY', estado:'progreso', prioridad:'alta', dia:10 },
+  { id:9, name:'Actualizar Google Ads', person:'FABRI', estado:'listo', prioridad:'baja', dia:6 },
+  { id:10, name:'Webinar planning — semana 3', person:'TONY', estado:'pendiente', prioridad:'media', dia:18 },
+];
+
+// ---- MESES ----
+const MESES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DIAS_POR_MES = [0,31,28,31,30,31,30,31,31,30,31,30,31];
+// Primer día de cada mes de 2026 (0=lun...6=dom, JS getDay ajustado)
+// Calculado dinámicamente abajo
+
+const YEAR = 2026;
+let currentMonth = 3; // Marzo por defecto
+
+// Calcular el offset del primer día del mes (lunes=0)
+function firstDayOffset(month) {
+  const d = new Date(YEAR, month - 1, 1).getDay(); // 0=dom
+  return (d + 6) % 7; // convertir a lun=0
+}
+
+function daysInMonth(month) {
+  return DIAS_POR_MES[month];
+}
+
+// Storage key por mes
+function storageKey(month) {
+  return `marketing_tasks_${YEAR}_m${month}`;
+}
+
+// Días libres por mes
+function daysOffKey(month) {
+  return `marketing_daysoff_${YEAR}_m${month}`;
+}
+
+// Default tasks solo para marzo
+const DEFAULT_TASKS_M3 = [
+  { id:1, name:'Campaña email — newsletter mensual', person:'FABRI', estado:'progreso', prioridad:'alta', dia:2, nota:'' },
+  { id:2, name:'Publicación redes sociales — lanzamiento producto', person:'TONY', estado:'pendiente', prioridad:'alta', dia:5, nota:'' },
+  { id:3, name:'Análisis SEO keywords Q1', person:'BENJA', estado:'listo', prioridad:'media', dia:1, nota:'' },
+  { id:4, name:'Diseño banner promocional', person:'FABRI', estado:'progreso', prioridad:'media', dia:8, nota:'' },
+  { id:5, name:'Reporte métricas febrero', person:'TONY', estado:'listo', prioridad:'baja', dia:3, nota:'' },
+  { id:6, name:'Estrategia contenido blog', person:'TONY', estado:'pendiente', prioridad:'alta', dia:12, nota:'' },
+  { id:7, name:'Coordinación con agencia publicidad', person:'BENJA', estado:'pendiente', prioridad:'media', dia:15, nota:'' },
+  { id:8, name:'A/B test landing page', person:'TONY', estado:'progreso', prioridad:'alta', dia:10, nota:'' },
+  { id:9, name:'Actualizar Google Ads', person:'FABRI', estado:'listo', prioridad:'baja', dia:6, nota:'' },
+  { id:10, name:'Webinar planning — semana 3', person:'TONY', estado:'pendiente', prioridad:'media', dia:18, nota:'' },
+];
+
+function getDefaultTasks(month) {
+  return month === 3 ? JSON.parse(JSON.stringify(DEFAULT_TASKS_M3)) : [];
+}
+
+function loadTasks(month) {
+  try {
+    const saved = localStorage.getItem(storageKey(month));
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.tasks || getDefaultTasks(month);
+    }
+  } catch(e) {}
+  return getDefaultTasks(month);
+}
+
+function saveTasks() {
+  try {
+    localStorage.setItem(storageKey(currentMonth), JSON.stringify({ tasks, nextId }));
+    showSaveToast();
+  } catch(e) {}
+}
+
+function loadNextId(month) {
+  try {
+    const saved = localStorage.getItem(storageKey(month));
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.nextId || 11;
+    }
+  } catch(e) {}
+  return 11;
+}
+
+function loadDaysOff(month) {
+  try {
+    const saved = localStorage.getItem(daysOffKey(month));
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return { TONY: [], BENJA: [], FABRI: [] };
+}
+
+function saveDaysOff() {
+  try { localStorage.setItem(daysOffKey(currentMonth), JSON.stringify(daysOff)); } catch(e) {}
+}
+
+function clearAllTasks() {
+  if (confirm('¿Seguro que quieres borrar todas las tareas de ' + MESES[currentMonth] + '? Esta acción no se puede deshacer.')) {
+    tasks = [];
+    nextId = 1;
+    saveTasks();
+    renderAll();
+  }
+}
+
+// ---- SWITCH MES ----
+function switchMonth(m) {
+  currentMonth = parseInt(m);
+  tasks = loadTasks(currentMonth);
+  nextId = loadNextId(currentMonth);
+  daysOff = loadDaysOff(currentMonth);
+  listFilter = 'todos';
+  rendFilter = 'todos';
+
+  // Actualizar UI
+  document.getElementById('header-sub').textContent = MESES[currentMonth] + ' ' + YEAR + ' — Gestión visual de tareas del equipo';
+  document.getElementById('year-label').textContent = YEAR;
+
+  // Actualizar descripciones de vistas con el mes correcto
+  VIEW_DESCS.gantt = `<span>📊 Gantt</span> — Distribución de tareas por fecha durante ${MESES[currentMonth]}`;
+  VIEW_DESCS.calendar = `<span>📅 Calendario</span> — Ve exactamente qué día del mes cae cada tarea`;
+  document.getElementById('view-desc').innerHTML = VIEW_DESCS[currentView];
+
+  renderAll();
+}
+
+function showSaveToast() {
+  let toast = document.getElementById('save-toast');
+  if (!toast) return;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+let tasks = loadTasks(currentMonth);
+let nextId = loadNextId(currentMonth);
+let currentView = 'kanban';
+let listFilter = 'todos';
+let daysOff = loadDaysOff(currentMonth);
+const PERSONS = ['TONY', 'BENJA', 'FABRI'];
+
+function isPersonFree(person, dia) {
+  return daysOff[person] && daysOff[person].includes(dia);
+}
+
+function toggleDayOff(person, dia) {
+  if (!daysOff[person]) daysOff[person] = [];
+  const idx = daysOff[person].indexOf(dia);
+  if (idx >= 0) daysOff[person].splice(idx, 1);
+  else daysOff[person].push(dia);
+  saveDaysOff();
+  renderDaysOff();
+}
+
+const VIEW_DESCS = {
+  kanban: '<span>⬛ Seguimiento</span> — Ideal para ver el flujo de trabajo por estado de cada tarea',
+  gantt: '<span>📊 Gantt</span> — Distribución de tareas por fecha durante Marzo',
+  list: '<span>☰ Lista priorizada</span> — Filtra y ordena todas las tareas con detalle completo',
+  calendar: '<span>📅 Calendario</span> — Ve exactamente qué día del mes cae cada tarea',
+  daysoff: '<span>🏖 Días libres</span> — Configurá los días de descanso del equipo',
+  rendimiento: '<span>✅ Rendimiento</span> — Tareas completadas por persona en el mes actual'
+};
+
+function avatarColor(name) {
+  if (PERSON_COLORS[name]) return PERSON_COLORS[name];
+  let h = 0;
+  for (let c of name) h += c.charCodeAt(0);
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
+function avatarLetter(name) {
+  return name ? name[0].toUpperCase() : '?';
+}
+
+function badgeClass(p) {
+  return p === 'alta' ? 'badge-alta' : p === 'media' ? 'badge-media' : 'badge-baja';
+}
+
+function priorityColor(p) {
+  return p === 'alta' ? '#f5605a' : p === 'media' ? '#f59e0b' : '#2dd4a0';
+}
+
+// ---- STATS ----
+function renderStats() {
+  const total = tasks.length;
+  const done = tasks.filter(t => t.estado === 'listo').length;
+  const prog = tasks.filter(t => t.estado === 'progreso').length;
+  const pend = tasks.filter(t => t.estado === 'pendiente').length;
+  const altas = tasks.filter(t => t.prioridad === 'alta').length;
+  const vencidas = tasks.filter(t => isVencida(t)).length;
+  const vencidaHTML = vencidas > 0
+    ? `<div class="stat-pill" style="border-color:rgba(245,96,90,0.4);background:rgba(245,96,90,0.08)"><span class="stat-num" style="color:var(--red)">${vencidas}</span><span class="stat-label" style="color:var(--red)">⚠ Vencidas</span></div>`
+    : '';
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat-pill"><span class="stat-num" style="color:var(--text)">${total}</span><span class="stat-label">Total</span></div>
+    <div class="stat-pill"><span class="stat-num" style="color:var(--accent)">${pend}</span><span class="stat-label">Pendientes</span></div>
+    <div class="stat-pill"><span class="stat-num" style="color:var(--accent2)">${prog}</span><span class="stat-label">En progreso</span></div>
+    <div class="stat-pill"><span class="stat-num" style="color:var(--green)">${done}</span><span class="stat-label">Listos</span></div>
+    <div class="stat-pill"><span class="stat-num" style="color:var(--red)">${altas}</span><span class="stat-label">Prioridad alta</span></div>
+    ${vencidaHTML}
+  `;
+}
+
+// ---- HELPERS ----
+function getToday() {
+  const now = new Date();
+  if (now.getFullYear() === YEAR && now.getMonth() + 1 === currentMonth) return now.getDate();
+  return -1;
+}
+
+function isVencida(t) {
+  const today = getToday();
+  return today > 0 && t.dia < today && t.estado !== 'listo';
+}
+
+// ---- DAYS OFF PANEL ----
+function renderDaysOff() {
+  const personColor = { TONY: '#2dd4a0', BENJA: '#a259ff', FABRI: '#3d8ef5' };
+  const totalDays = daysInMonth(currentMonth);
+
+  let blocksHTML = PERSONS.map(person => {
+    const color = personColor[person];
+    let daysHTML = '';
+    for (let d = 1; d <= totalDays; d++) {
+      const active = isPersonFree(person, d);
+      daysHTML += `<button
+        class="daysoff-day-btn ${active ? 'selected' : ''}"
+        style="${active ? 'background:' + color + ';border-color:' + color : ''}"
+        onclick="toggleDayOff('${person}', ${d})"
+        title="Día ${d} — ${person}">${d}</button>`;
+    }
+    return `<div class="daysoff-person-block">
+      <div class="daysoff-person-label">
+        <div class="daysoff-person-dot" style="background:${color}"></div>
+        <span style="color:${color}">${person}</span>
+        <span style="color:var(--muted);font-weight:400;font-size:0.7rem;text-transform:none;letter-spacing:0">
+          — ${(daysOff[person]||[]).length} día${(daysOff[person]||[]).length !== 1 ? 's' : ''} libre${(daysOff[person]||[]).length !== 1 ? 's' : ''}
+        </span>
+      </div>
+      <div class="daysoff-days-grid">${daysHTML}</div>
+    </div>`;
+  }).join('');
+
+  const conflictos = tasks.filter(t => isPersonFree(t.person, t.dia) && t.estado !== 'listo');
+  let conflictHTML = '';
+  if (conflictos.length > 0) {
+    const rows = conflictos.map(t => {
+      const c = personColor[t.person] || '#e8eaf0';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+        <span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block;flex-shrink:0"></span>
+        <span style="font-size:0.82rem;flex:1">${t.name}</span>
+        <span style="font-size:0.75rem;color:${c};font-weight:600">${t.person}</span>
+        <span style="font-size:0.75rem;color:var(--orange)">Día ${t.dia}</span>
+      </div>`;
+    }).join('');
+    conflictHTML = `<div style="margin-top:16px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:14px 18px">
+      <div style="font-family:Syne,sans-serif;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin-bottom:8px">
+        ⚠ ${conflictos.length} conflicto${conflictos.length>1?'s':''} detectado${conflictos.length>1?'s':''}
+      </div>
+      ${rows}
+    </div>`;
+  }
+
+  const html = `<div class="view-panel">
+    <div class="daysoff-panel">${blocksHTML}</div>
+    ${conflictHTML}
+  </div>`;
+  document.getElementById('main-content').innerHTML = html;
+}
+
+// ---- ADD TASK ----
+function addTask() {
+  const name = document.getElementById('in-name').value.trim();
+  if (!name) { document.getElementById('in-name').focus(); return; }
+  const person = document.getElementById('in-person').value.trim() || 'Tú';
+  const estado = document.getElementById('in-estado').value;
+  const prioridad = document.getElementById('in-prioridad').value;
+  const dia = parseInt(document.getElementById('in-dia').value) || Math.floor(Math.random()*28)+1;
+  tasks.push({ id: nextId++, name, person, estado, prioridad, dia, nota: '' });
+  document.getElementById('in-name').value = '';
+  document.getElementById('in-person').value = '';
+  saveTasks();
+  renderAll();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks();
+  renderAll();
+}
+
+
+// ---- EDIT MODAL ----
+function openEditModal(id) {
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  document.getElementById('edit-id').value = t.id;
+  document.getElementById('edit-name').value = t.name;
+  document.getElementById('edit-person').value = t.person;
+  document.getElementById('edit-estado').value = t.estado;
+  document.getElementById('edit-prioridad').value = t.prioridad;
+  document.getElementById('edit-dia').value = t.dia;
+  document.getElementById('edit-nota').value = t.nota || '';
+  document.getElementById('edit-modal').classList.add('open');
+  setTimeout(() => document.getElementById('edit-name').focus(), 50);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+function saveEdit() {
+  const id = parseInt(document.getElementById('edit-id').value);
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  t.name      = document.getElementById('edit-name').value.trim() || t.name;
+  t.person    = document.getElementById('edit-person').value.trim() || t.person;
+  t.estado    = document.getElementById('edit-estado').value;
+  t.prioridad = document.getElementById('edit-prioridad').value;
+  t.dia       = parseInt(document.getElementById('edit-dia').value) || t.dia;
+  t.nota      = document.getElementById('edit-nota').value.trim();
+  saveTasks();
+  closeEditModal();
+  renderAll();
+}
+
+// ---- SWITCH VIEW ----
+function switchView(v) {
+  currentView = v;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + v).classList.add('active');
+  document.getElementById('view-desc').innerHTML = VIEW_DESCS[v] || '';
+  renderAll();
+}
+
+function renderAll() {
+  renderStats();
+  renderNotifications();
+  if (currentView === 'kanban') renderKanban();
+  else if (currentView === 'gantt') renderGantt();
+  else if (currentView === 'list') renderList();
+  else if (currentView === 'calendar') renderCalendar();
+  else if (currentView === 'daysoff') renderDaysOff();
+  else if (currentView === 'rendimiento') renderRendimiento();
+}
+
+// ---- KANBAN ----
+let rendFilter = 'todos';
+
+// ---- RENDIMIENTO ----
+function renderRendimiento() {
+  const PCOLORS = { TONY: '#2dd4a0', BENJA: '#a259ff', FABRI: '#3d8ef5' };
+  const mesNombre = MESES[currentMonth];
+
+  // Tareas completadas del mes
+  const completadas = tasks.filter(t => t.estado === 'listo');
+
+  // Stats por persona
+  const stats = PERSONS.map(p => {
+    const ptasks = completadas.filter(t => t.person === p);
+    const altas = ptasks.filter(t => t.prioridad === 'alta').length;
+    const medias = ptasks.filter(t => t.prioridad === 'media').length;
+    const bajas = ptasks.filter(t => t.prioridad === 'baja').length;
+    return { person: p, total: ptasks.length, altas, medias, bajas, color: PCOLORS[p] || '#e8eaf0' };
+  });
+
+  const totalCompletas = completadas.length;
+  const maxPersonTotal = Math.max(...stats.map(s => s.total), 1);
+
+  // Cards por persona
+  const cardsHTML = stats.map(s => {
+    const pct = totalCompletas > 0 ? Math.round((s.total / totalCompletas) * 100) : 0;
+    const barPct = Math.round((s.total / maxPersonTotal) * 100);
+    return `
+    <div class="rend-person-card" style="border-color:${s.color}22">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${s.color};border-radius:3px 3px 0 0;opacity:0.7"></div>
+      <div class="rend-person-header">
+        <div class="rend-avatar" style="background:${s.color}">${s.person[0]}</div>
+        <div>
+          <div class="rend-person-name" style="color:${s.color}">${s.person}</div>
+          <div class="rend-person-sub">${pct}% del total del mes</div>
+        </div>
+      </div>
+      <div class="rend-big-num" style="color:${s.color}">${s.total}</div>
+      <div class="rend-big-label">tareas completadas</div>
+      <div class="rend-progress-bar">
+        <div class="rend-progress-fill" style="width:${barPct}%;background:${s.color}"></div>
+      </div>
+      <div class="rend-mini-stats">
+        <div class="rend-mini-stat">
+          <span class="rend-mini-num" style="color:var(--red)">${s.altas}</span>
+          <span class="rend-mini-label">Alta</span>
+        </div>
+        <div class="rend-mini-stat">
+          <span class="rend-mini-num" style="color:var(--orange)">${s.medias}</span>
+          <span class="rend-mini-label">Media</span>
+        </div>
+        <div class="rend-mini-stat">
+          <span class="rend-mini-num" style="color:var(--green)">${s.bajas}</span>
+          <span class="rend-mini-label">Baja</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Filtrar tabla
+  let filtradas = completadas;
+  if (rendFilter !== 'todos') filtradas = completadas.filter(t => t.person === rendFilter);
+
+  // Tabla de tareas completadas
+  const rowsHTML = filtradas.length === 0
+    ? `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Sin tareas completadas${rendFilter !== 'todos' ? ' para ' + rendFilter : ''} en ${mesNombre}</td></tr>`
+    : filtradas.map(t => {
+        const ac = PCOLORS[t.person] || '#e8eaf0';
+        const notaHTML = t.nota
+          ? `<span class="note-icon" style="margin-left:6px">📝<span class="note-tooltip">${t.nota}</span></span>`
+          : '';
+        return `<tr>
+          <td>
+            <span style="display:inline-flex;align-items:center;gap:6px">
+              <span style="width:8px;height:8px;border-radius:50%;background:${priorityColor(t.prioridad)};flex-shrink:0;display:inline-block"></span>
+              ${t.name}${notaHTML}
+            </span>
+          </td>
+          <td>
+            <span class="avatar" style="background:${ac}">${avatarLetter(t.person)}</span>
+            <span style="margin-left:6px;color:var(--muted);font-size:0.78rem">${t.person}</span>
+          </td>
+          <td><span class="badge ${badgeClass(t.prioridad)}">${t.prioridad}</span></td>
+          <td style="color:var(--muted);font-size:0.78rem">Día ${t.dia}</td>
+          <td><span class="done-badge">✓ Listo</span></td>
+        </tr>`;
+      }).join('');
+
+  const filterTabs = ['todos', ...PERSONS].map(f =>
+    `<button class="rend-tab ${rendFilter===f?'active':''}" onclick="setRendFilter('${f}')">${f === 'todos' ? 'Todos' : f}</button>`
+  ).join('');
+
+  const html = `<div class="view-panel">
+    <div class="rend-wrap">
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start">
+        <div class="rend-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">${cardsHTML}</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px">
+            <div style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:14px">📊 Comparativa</div>
+            ${buildBarChart(stats)}
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 20px">
+            <div style="font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:10px">🏆 Ranking ${mesNombre}</div>
+            ${buildRanking(stats)}
+            ${totalCompletas === 0 ? '<div style="color:var(--muted);font-size:0.78rem;padding:8px 0">Sin tareas completadas aún</div>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="rend-table-wrap">
+        <div class="rend-table-header">
+          <div>
+            <div class="rend-table-title">Tareas completadas — ${mesNombre} ${YEAR}</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${filtradas.length} tarea${filtradas.length!==1?'s':''} mostrada${filtradas.length!==1?'s':''}</div>
+          </div>
+          <div class="rend-filter-tabs">${filterTabs}</div>
+        </div>
+        <table class="rend-table">
+          <thead><tr>
+            <th>Tarea</th>
+            <th>Responsable</th>
+            <th>Prioridad</th>
+            <th>Día</th>
+            <th>Estado</th>
+          </tr></thead>
+          <tbody>${rowsHTML}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+function setRendFilter(f) {
+  rendFilter = f;
+  renderRendimiento();
+}
+
+function makeDZ(key) {
+  var div = document.createElement('div');
+  div.className = 'kanban-col drop-zone';
+  div.dataset.estado = key;
+  div.addEventListener('dragover', function(e){ e.preventDefault(); div.classList.add('drag-over'); });
+  div.addEventListener('dragleave', function(){ div.classList.remove('drag-over'); });
+  div.addEventListener('drop', function(e){ onDrop(e, key); });
+  return div;
+}
+
+function makeCard(t) {
+  var ac = avatarColor(t.person);
+  var div = document.createElement('div');
+  div.className = 'kanban-card' + (isVencida(t) ? ' vencida' : '');
+  div.setAttribute('draggable', 'true');
+  div.dataset.id = t.id;
+  div.style.cursor = 'grab';
+
+  var notaHTML = t.nota ? '<span class="note-icon">📝<span class="note-tooltip">' + t.nota + '</span></span>' : '';
+  var vencidaBadge = isVencida(t) ? '<span class="vencida-badge">⚠ Vencida</span>' : '';
+  var freeBadge = isPersonFree(t.person, t.dia) && t.estado !== 'listo' ? '<span class="free-badge">🏖 Libre</span>' : '';
+
+  div.innerHTML = '<div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:' + priorityColor(t.prioridad) + ';border-radius:3px 0 0 3px"></div>'
+    + '<div class="card-name" style="padding-left:4px">' + t.name + '</div>'
+    + '<div class="card-meta">'
+    + '<span class="badge ' + badgeClass(t.prioridad) + '">' + t.prioridad + '</span>'
+    + '<span class="assignee"><span class="avatar" style="background:' + ac + '">' + avatarLetter(t.person) + '</span> ' + t.person + '</span>'
+    + vencidaBadge + freeBadge + notaHTML
+    + '<button class="btn-edit" title="Editar">✏️</button>'
+    + '<button class="btn-del" title="Eliminar">✕</button>'
+    + '</div>';
+  div.querySelector('.btn-edit').addEventListener('click', function(){ openEditModal(t.id); });
+  div.querySelector('.btn-del').addEventListener('click', function(){ deleteTask(t.id); });
+  div.addEventListener('dragstart', function(e){ onDragStart(e, t.id); });
+  div.addEventListener('dragend', onDragEnd);
+  return div;
+}
+
+function renderKanban() {
+  var cols = [
+    { key:'pendiente', label:'Pendiente', color:'#f5c842' },
+    { key:'progreso', label:'En progreso', color:'#3d8ef5' },
+    { key:'listo', label:'Listo', color:'#2dd4a0' },
+  ];
+  var board = document.createElement('div');
+  board.className = 'kanban-board view-panel';
+
+  cols.forEach(function(col) {
+    var colTasks = tasks.filter(function(t){ return t.estado === col.key; });
+    var dz = makeDZ(col.key);
+
+    var header = document.createElement('div');
+    header.className = 'col-header';
+    header.innerHTML = '<div class="col-dot" style="background:' + col.color + '"></div>'
+      + '<span class="col-title" style="color:' + col.color + '">' + col.label + '</span>'
+      + '<span class="col-count">' + colTasks.length + '</span>';
+    dz.appendChild(header);
+
+    if (colTasks.length === 0) {
+      var hint = document.createElement('div');
+      hint.className = 'empty-col-hint';
+      hint.textContent = 'Suelta aquí';
+      dz.appendChild(hint);
+    } else {
+      colTasks.forEach(function(t, i) {
+        var card = makeCard(t);
+        card.style.animationDelay = (i * 0.05) + 's';
+        dz.appendChild(card);
+      });
+    }
+    board.appendChild(dz);
+  });
+
+  var mc = document.getElementById('main-content');
+  mc.innerHTML = '';
+  mc.appendChild(board);
+}
+
+function onDragStart(event, id) {
+  dragId = id;
+  event.dataTransfer.effectAllowed = 'move';
+  setTimeout(function() {
+    var el = document.querySelector('[data-id="' + id + '"]');
+    if (el) el.classList.add('dragging');
+  }, 0);
+}
+
+function onDragEnd() {
+  document.querySelectorAll('.kanban-card').forEach(function(c){ c.classList.remove('dragging'); });
+  document.querySelectorAll('.drop-zone').forEach(function(c){ c.classList.remove('drag-over'); });
+}
+
+function onDrop(event, newEstado) {
+  event.preventDefault();
+  document.querySelectorAll('.drop-zone').forEach(function(c){ c.classList.remove('drag-over'); });
+  if (dragId === null) return;
+  var t = tasks.find(function(t){ return t.id === dragId; });
+  if (t) { t.estado = newEstado; saveTasks(); }
+  dragId = null;
+  renderAll();
+}
+
+// ---- GANTT ----
+function renderGantt() {
+  const sorted = [...tasks].sort((a,b) => a.dia - b.dia);
+  const daysInM = daysInMonth(currentMonth);
+  const mesNombre = MESES[currentMonth].slice(0,3); // abreviado
+  const WEEKS = [
+    {label:'S1', from:1,  to:7},
+    {label:'S2', from:8,  to:14},
+    {label:'S3', from:15, to:21},
+    {label:'S4', from:22, to:daysInM}
+  ];
+  const ticksHtml = WEEKS.map(w => {
+    const left = ((w.from-1)/daysInM*100).toFixed(1);
+    const width = ((w.to-w.from+1)/daysInM*100).toFixed(1);
+    return `<div style="position:absolute;left:${left}%;width:${width}%;top:0;bottom:0;border-left:1px dashed rgba(255,255,255,0.08);display:flex;align-items:center;padding-left:4px;font-size:0.65rem;color:var(--muted);font-family:Syne,sans-serif;font-weight:700">${w.label}<span style="font-weight:400;margin-left:2px;opacity:0.6">${w.from}-${w.to}</span></div>`;
+  }).join('');
+
+  let html = `<div class="view-panel"><div class="gantt-wrap">
+    <table class="gantt-table">
+      <thead><tr>
+        <th style="min-width:220px">Tarea</th>
+        <th>Responsable</th>
+        <th>Prioridad</th>
+        <th>Estado</th>
+        <th class="gantt-bar-cell" style="position:relative">
+          <div style="position:relative;height:28px;background:var(--surface2);border-radius:6px;overflow:hidden">${ticksHtml}</div>
+        </th>
+        <th></th>
+      </tr></thead><tbody>`;
+
+  sorted.forEach(t => {
+    const start = ((t.dia - 1) / daysInM) * 100;
+    const duration = t.prioridad === 'alta' ? 5 : t.prioridad === 'media' ? 4 : 3;
+    const width = Math.min((duration / daysInM) * 100, 100 - start);
+    const barColor = COLORS[t.estado];
+    const ac = avatarColor(t.person);
+
+    html += `<tr>
+      <td style="font-size:0.82rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.name}">${t.name}</td>
+      <td><span class="avatar" style="background:${ac}">${avatarLetter(t.person)}</span> <span style="font-size:0.78rem;color:var(--muted)">${t.person}</span></td>
+      <td><span class="badge ${badgeClass(t.prioridad)}">${t.prioridad}</span></td>
+      <td><span style="font-size:0.75rem;color:${barColor}">${t.estado}</span></td>
+      <td class="gantt-bar-cell">
+        <div class="gantt-timeline" style="position:relative">
+          ${WEEKS.map(w => {
+            const wl = ((w.from-1)/daysInM*100).toFixed(1);
+            return `<div style="position:absolute;left:${wl}%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.05)"></div>`;
+          }).join('')}
+          <div class="gantt-bar" style="left:${start}%;width:${width}%;background:${barColor}">
+            ${mesNombre} ${t.dia}
+          </div>
+        </div>
+      </td>
+      <td style="white-space:nowrap"><button class="btn-edit" onclick="openEditModal(${t.id})">✏️</button> <button class="btn-del" onclick="deleteTask(${t.id})">✕</button></td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div></div>';
+  document.getElementById('main-content').innerHTML = html;
+}
+
+// ---- LIST ----
+function renderList() {
+  const filters = ['todos','pendiente','progreso','listo','alta','media','baja'];
+  const filterLabels = { todos:'Todos', pendiente:'Pendiente', progreso:'En progreso', listo:'Listo', alta:'🔴 Alta', media:'🟡 Media', baja:'🟢 Baja' };
+
+  let filtered = tasks;
+  if (listFilter !== 'todos') {
+    filtered = tasks.filter(t => t.estado === listFilter || t.prioridad === listFilter);
+  }
+  const sorted = [...filtered].sort((a,b) => {
+    const po = {alta:0,media:1,baja:2};
+    return po[a.prioridad] - po[b.prioridad];
+  });
+
+  let chips = filters.map(f =>
+    `<button class="filter-chip ${listFilter===f?'active':''}" onclick="setFilter('${f}')">${filterLabels[f]}</button>`
+  ).join('');
+
+  let rows = sorted.map(t => `
+    <tr>
+      <td>
+        <span class="priority-dot" style="background:${priorityColor(t.prioridad)}"></span>
+        ${t.name}
+      </td>
+      <td>
+        <span class="avatar" style="background:${avatarColor(t.person)}">${avatarLetter(t.person)}</span>
+        <span style="margin-left:6px;color:var(--muted);font-size:0.8rem">${t.person}</span>
+      </td>
+      <td><span class="badge ${badgeClass(t.prioridad)}">${t.prioridad}</span></td>
+      <td><span style="color:${COLORS[t.estado]};font-size:0.82rem;font-weight:500">${t.estado}</span></td>
+      <td style="color:var(--muted);font-size:0.8rem">Día ${t.dia}</td>
+      <td style="white-space:nowrap"><button class="btn-edit" onclick="openEditModal(${t.id})">✏️</button> <button class="btn-del" onclick="deleteTask(${t.id})">✕</button></td>
+    </tr>`).join('');
+
+  let html = `<div class="view-panel"><div class="list-wrap">
+    <div class="list-filters">
+      <span class="filter-label">Filtrar:</span>${chips}
+    </div>
+    <table class="list-table">
+      <thead><tr>
+        <th>Tarea</th><th>Responsable</th><th>Prioridad</th><th>Estado</th><th>Día</th><th></th>
+      </tr></thead>
+      <tbody>${rows || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px">Sin tareas que coincidan</td></tr>'}</tbody>
+    </table>
+  </div></div>`;
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+function setFilter(f) {
+  listFilter = f;
+  renderList();
+}
+
+// ---- CALENDAR ----
+let calDragId = null;
+
+function renderCalendar() {
+  const days = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const totalDays = daysInMonth(currentMonth);
+  const offset = firstDayOffset(currentMonth);
+  const now = new Date();
+  const today = (now.getFullYear() === YEAR && now.getMonth()+1 === currentMonth) ? now.getDate() : -1;
+  const mesNombre = MESES[currentMonth];
+
+  const PRIORITY_DOT = { alta: '#f5605a', media: '#f5c842', baja: '#2dd4a0' };
+
+  let html = `<div class="view-panel"><div style="font-family:Syne,sans-serif;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px;padding-left:2px">${mesNombre} ${YEAR}</div><div class="calendar-grid">`;
+  days.forEach(d => html += `<div class="cal-day-header">${d}</div>`);
+
+  for (let i = 0; i < offset; i++) {
+    html += '<div class="cal-cell empty"></div>';
+  }
+
+  for (let d = 1; d <= totalDays; d++) {
+    const dayTasks = tasks.filter(t => t.dia === d);
+    const isToday = d === today;
+    const hasPastDue = d < today && dayTasks.some(t => t.estado !== 'listo');
+    html += `<div class="cal-cell ${isToday ? 'today' : ''} ${hasPastDue ? 'cal-vencida' : ''} cal-drop-zone"
+      data-day="${d}"
+      ondragover="event.preventDefault();this.classList.add('cal-drag-over')"
+      ondragleave="this.classList.remove('cal-drag-over')"
+      ondrop="onCalDrop(event,${d})">
+      <div class="cal-num">${isToday
+        ? `<span style="background:var(--accent);color:#0d0f14;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-family:Syne,sans-serif;font-weight:800">${d}</span>`
+        : d}</div>`;
+
+    dayTasks.slice(0,3).forEach(t => {
+      const personColor = PERSON_COLORS[t.person] || '#e8eaf0';
+      const dotColor = PRIORITY_DOT[t.prioridad];
+      html += `<div class="cal-task"
+        draggable="true"
+        data-cal-id="${t.id}"
+        style="background:${COLORS[t.estado]}18;color:${personColor};border-left:2px solid ${COLORS[t.estado]};cursor:grab"
+        ondragstart="onCalDragStart(event,${t.id})"
+        ondragend="onCalDragEnd(event)"
+        title="${t.name}">
+        <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${dotColor};margin-right:4px;flex-shrink:0;vertical-align:middle;margin-top:-1px"></span>${t.name}
+        <span style="display:block;font-size:0.58rem;opacity:0.8;margin-top:2px;color:${personColor};font-weight:600;letter-spacing:0.03em">${t.person}</span>
+      </div>`;
+    });
+
+    if (dayTasks.length > 3) html += `<div style="font-size:0.62rem;color:var(--muted)">+${dayTasks.length-3} más</div>`;
+
+    // Puntitos de personas libres ese día
+    const freePersons = PERSONS.filter(p => isPersonFree(p, d));
+    if (freePersons.length > 0) {
+      html += `<div class="cal-daysoff-row">`;
+      freePersons.forEach(p => {
+        const c = PERSON_COLORS[p] || '#888';
+        html += `<div class="cal-free-dot" style="background:${c}" title="${p} libre"></div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += '</div>';
+  }
+
+  html += '</div></div>';
+  document.getElementById('main-content').innerHTML = html;
+}
+
+function onCalDragStart(event, id) {
+  calDragId = id;
+  event.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => {
+    const el = document.querySelector('[data-cal-id="'+id+'"]');
+    if (el) el.classList.add('cal-dragging');
+  }, 0);
+}
+
+function onCalDragEnd(event) {
+  document.querySelectorAll('.cal-task').forEach(c => c.classList.remove('cal-dragging'));
+  document.querySelectorAll('.cal-drop-zone').forEach(c => c.classList.remove('cal-drag-over'));
+}
+
+function onCalDrop(event, newDay) {
+  event.preventDefault();
+  document.querySelectorAll('.cal-drop-zone').forEach(c => c.classList.remove('cal-drag-over'));
+  if (calDragId === null) return;
+  const t = tasks.find(t => t.id === calDragId);
+  if (t && t.dia !== newDay) {
+    t.dia = newDay;
+    saveTasks();
+  }
+  calDragId = null;
+  renderAll();
+}
+
+
+// ---- EXPORT SNAPSHOT ----
+function exportSnapshot() {
+  // Guardar mes actual antes de exportar
+  saveTasks();
+
+  // Recopilar todos los meses guardados
+  var allMonths = {};
+  for (var m = 1; m <= 12; m++) {
+    var sk = storageKey(m);
+    var dk = daysOffKey(m);
+    try {
+      var ts = localStorage.getItem(sk);
+      var ds = localStorage.getItem(dk);
+      if (ts) allMonths['t' + m] = ts;
+      if (ds) allMonths['d' + m] = ds;
+    } catch(e) {}
+  }
+
+  var base = document.documentElement.outerHTML;
+  var injected = '<scr' + 'ipt>window.__SNAP__=' + JSON.stringify(allMonths) + ';window.__SNAP_MONTH__=' + currentMonth + ';</scr' + 'ipt>'
+    + '<scr' + 'ipt>window.addEventListener("DOMContentLoaded",function(){'
+    + 'if(window.__SNAP__){'
+    + '  for(var k in window.__SNAP__){'
+    + '    var isDay = k[0]==="d";'
+    + '    var m = parseInt(k.slice(1));'
+    + '    if(isDay) localStorage.setItem(daysOffKey(m), window.__SNAP__[k]);'
+    + '    else localStorage.setItem(storageKey(m), window.__SNAP__[k]);'
+    + '  }'
+    + '}'
+    + 'var sel=document.getElementById("month-select");'
+    + 'if(sel){sel.value=window.__SNAP_MONTH__;switchMonth(window.__SNAP_MONTH__);}'
+    + 'var ab=document.querySelector(".add-bar");if(ab)ab.style.display="none";'
+    + 'var h=document.querySelector("h1");if(h){var b=document.createElement("span");'
+    + 'b.style.cssText="font-size:0.6rem;background:#3d8ef5;color:#fff;padding:3px 10px;border-radius:20px;margin-left:12px;font-family:DM Sans,sans-serif;font-weight:600;vertical-align:middle;";'
+    + 'b.textContent="Solo lectura";h.appendChild(b);}});</scr'+'ipt>';
+  var exportHTML = base.replace('</body>', injected + '</body>');
+  var blob = new Blob([exportHTML], {type:'text/html'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var now = new Date();
+  var d = now.getDate().toString().padStart(2,'0');
+  var mo = (now.getMonth()+1).toString().padStart(2,'0');
+  var y = now.getFullYear();
+  a.href = url;
+  a.download = 'marketing-tasks-compartir-' + d + '-' + mo + '-' + y + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  var toast = document.getElementById('save-toast');
+  if (toast) {
+    toast.textContent = '📤 Listo para compartir';
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function(){ toast.classList.remove('show'); toast.textContent = '✓ Guardado'; }, 3000);
+  }
+}
+
+// ---- BUSCADOR ----
+let searchOpen = false;
+
+function toggleSearch() {
+  searchOpen = !searchOpen;
+  const bar = document.getElementById('search-bar');
+  bar.style.display = searchOpen ? 'block' : 'none';
+  if (searchOpen) {
+    setTimeout(() => document.getElementById('search-input').focus(), 60);
+  } else {
+    document.getElementById('search-input').value = '';
+    document.getElementById('search-results').style.display = 'none';
+  }
+}
+
+function closeSearch() {
+  searchOpen = false;
+  document.getElementById('search-bar').style.display = 'none';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').style.display = 'none';
+}
+
+function onSearch(q) {
+  const res = document.getElementById('search-results');
+  if (!q.trim()) { res.style.display = 'none'; return; }
+  // Buscar en todos los meses
+  const matches = [];
+  for (let m = 1; m <= 12; m++) {
+    const mt = loadTasks(m);
+    mt.filter(t => t.name.toLowerCase().includes(q.toLowerCase())).forEach(t => {
+      matches.push({ ...t, _month: m });
+    });
+  }
+  if (!matches.length) {
+    res.style.display = 'block';
+    res.innerHTML = `<div style="padding:12px 16px;color:var(--muted);font-size:0.8rem">Sin resultados para "<strong>${q}</strong>"</div>`;
+    return;
+  }
+  res.style.display = 'block';
+  res.innerHTML = matches.slice(0, 8).map(t => {
+    const ac = PERSON_COLORS[t.person] || '#e8eaf0';
+    const estadoColor = COLORS[t.estado] || '#888';
+    const isCurrent = t._month === currentMonth;
+    return `<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.1s"
+      onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''"
+      onclick="goToTask(${t.id}, ${t._month})">
+      <span class="avatar" style="background:${ac};width:22px;height:22px;font-size:0.62rem">${avatarLetter(t.person)}</span>
+      <span style="flex:1;font-size:0.82rem">${t.name}</span>
+      <span style="font-size:0.7rem;color:${estadoColor};font-weight:600">${t.estado}</span>
+      <span style="font-size:0.68rem;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:10px">${MESES[t._month]}${isCurrent?'':''}</span>
+    </div>`;
+  }).join('') + (matches.length > 8 ? `<div style="padding:8px 16px;color:var(--muted);font-size:0.72rem">+${matches.length-8} más resultados</div>` : '');
+}
+
+function goToTask(id, month) {
+  closeSearch();
+  if (month !== currentMonth) {
+    document.getElementById('month-select').value = month;
+    switchMonth(month);
+  }
+  setTimeout(() => openEditModal(id), 150);
+}
+
+// ---- NOTIFICACIONES ----
+function renderNotifications() {
+  const bubble = document.getElementById('notif-bubble');
+  const notifs = [];
+
+  // Hoy real vs mes actual
+  const now = new Date();
+  const todayReal = now.getDate();
+  const monthReal = now.getMonth() + 1;
+  const yearReal = now.getFullYear();
+  const isMesActual = (yearReal === YEAR && monthReal === currentMonth);
+
+  const vencidas = tasks.filter(t => isVencida(t));
+  if (vencidas.length) {
+    notifs.push({ color: 'var(--red)', text: `⚠️ <strong>${vencidas.length}</strong> tarea${vencidas.length>1?'s':''} vencida${vencidas.length>1?'s':''}` });
+  }
+
+  const altasPend = tasks.filter(t => t.prioridad === 'alta' && t.estado === 'pendiente');
+  if (altasPend.length) {
+    notifs.push({ color: 'rgba(245,96,90,0.15)', text: `🔴 <strong>${altasPend.length}</strong> alta${altasPend.length>1?'s':''} pendiente${altasPend.length>1?'s':''}` });
+  }
+
+  const sinAsignar = tasks.filter(t => !t.person || t.person === 'Tú');
+  if (sinAsignar.length) {
+    notifs.push({ color: 'rgba(245,158,11,0.12)', text: `👤 <strong>${sinAsignar.length}</strong> sin responsable` });
+  }
+
+  const conflictos = tasks.filter(t => isPersonFree(t.person, t.dia) && t.estado !== 'listo');
+  if (conflictos.length) {
+    notifs.push({ color: 'rgba(245,158,11,0.12)', text: `🏖 <strong>${conflictos.length}</strong> conflicto${conflictos.length>1?'s':''} con días libres` });
+  }
+
+  const total = tasks.length;
+  const listos = tasks.filter(t => t.estado === 'listo').length;
+  const pct = total > 0 ? Math.round((listos/total)*100) : 0;
+  notifs.push({ color: 'rgba(45,212,160,0.1)', text: `✅ <strong>${pct}%</strong> completado este mes (${listos}/${total})` });
+
+  bubble.style.display = 'flex';
+  bubble.style.flexWrap = 'wrap';
+  bubble.style.gap = '6px';
+  bubble.style.alignItems = 'center';
+  bubble.innerHTML = `<span style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-right:4px;white-space:nowrap">📌 ${MESES[currentMonth]}</span>`
+    + notifs.map(n => `<span style="background:${n.color};border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:0.75rem;color:var(--text);white-space:nowrap">${n.text}</span>`).join('');
+}
+
+// ---- COPIAR TAREA A OTRO MES ----
+let copyTaskId = null;
+
+function openCopyModal() {
+  const id = parseInt(document.getElementById('edit-id').value);
+  const t = tasks.find(t => t.id === id);
+  if (!t) return;
+  copyTaskId = id;
+  document.getElementById('copy-task-name').textContent = `"${t.name}"`;
+  const nextM = currentMonth < 12 ? currentMonth + 1 : 1;
+  document.getElementById('copy-month').value = nextM;
+  document.getElementById('copy-dia').value = t.dia;
+  document.getElementById('copy-estado').value = 'pendiente';
+  // Cerrar edit-modal y abrir copy-modal
+  document.getElementById('edit-modal').classList.remove('open');
+  document.getElementById('copy-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('copy-dia').focus(), 80);
+}
+
+function closeCopyModal() {
+  document.getElementById('copy-modal').style.display = 'none';
+  copyTaskId = null;
+}
+
+function confirmCopy() {
+  const t = tasks.find(t => t.id === copyTaskId);
+  if (!t) return;
+  const destMonth = parseInt(document.getElementById('copy-month').value);
+  const destDia = parseInt(document.getElementById('copy-dia').value);
+  const destEstado = document.getElementById('copy-estado').value;
+  if (!destDia || destDia < 1 || destDia > 31) {
+    document.getElementById('copy-dia').focus();
+    return;
+  }
+
+  // Cargar tareas del mes destino, agregar, guardar
+  const destTasks = loadTasks(destMonth);
+  const destNextId = loadNextId(destMonth);
+  const newTask = { ...t, id: destNextId, dia: destDia, estado: destEstado, nota: t.nota || '' };
+  destTasks.push(newTask);
+  try {
+    localStorage.setItem(storageKey(destMonth), JSON.stringify({ tasks: destTasks, nextId: destNextId + 1 }));
+  } catch(e) {}
+
+  closeCopyModal();
+  closeEditModal();
+
+  // Toast
+  const toast = document.getElementById('save-toast');
+  if (toast) {
+    toast.textContent = `📋 Copiada a ${MESES[destMonth]}`;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { toast.classList.remove('show'); toast.textContent = '✓ Guardado'; }, 2500);
+  }
+}
+
+// ---- GRÁFICO EN RENDIMIENTO (barras SVG) ----
+function buildBarChart(stats) {
+  const maxVal = Math.max(...stats.map(s => s.total), 1);
+  const W = 300, H = 90, barW = 54, gap = 24;
+  const PCOLORS = { TONY: '#2dd4a0', BENJA: '#a259ff', FABRI: '#3d8ef5' };
+  const totalX = stats.length * (barW + gap) - gap;
+  const startX = (W - totalX) / 2;
+
+  let bars = stats.map((s, i) => {
+    const x = startX + i * (barW + gap);
+    const barH = maxVal > 0 ? Math.round((s.total / maxVal) * (H - 24)) : 0;
+    const y = H - barH - 16;
+    const color = PCOLORS[s.person] || '#888';
+    return `
+      <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="6" fill="${color}" opacity="0.85"/>
+      <text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" font-family="Syne,sans-serif" font-size="13" font-weight="800" fill="${color}">${s.total}</text>
+      <text x="${x + barW/2}" y="${H}" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="#6b7280">${s.person}</text>
+    `;
+  }).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H+4}" width="${W}" height="${H+4}" style="overflow:visible">${bars}</svg>`;
+}
+
+// ---- RANKING ----
+function buildRanking(stats) {
+  const sorted = [...stats].sort((a, b) => b.total - a.total);
+  const medals = ['🥇', '🥈', '🥉'];
+  const PCOLORS = { TONY: '#2dd4a0', BENJA: '#a259ff', FABRI: '#3d8ef5' };
+  return sorted.map((s, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:1.1rem;width:24px;text-align:center">${medals[i] || (i+1)+'.'}</span>
+      <span class="avatar" style="background:${PCOLORS[s.person]||'#888'};width:26px;height:26px;font-size:0.72rem;font-weight:800">${s.person[0]}</span>
+      <span style="flex:1;font-size:0.85rem;font-weight:600;color:${PCOLORS[s.person]||'var(--text)'}">${s.person}</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:${PCOLORS[s.person]||'var(--text)'}">${s.total}</span>
+      <span style="font-size:0.7rem;color:var(--muted)">tareas</span>
+    </div>
+  `).join('');
+}
+
+// ---- INIT ----
+renderAll();
+</script>
+
+<!-- Edit Modal -->
+<div id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Editar tarea</div>
+    <input type="hidden" id="edit-id">
+    <div class="modal-field">
+      <label>Nombre de la tarea</label>
+      <input id="edit-name" type="text" onkeydown="if(event.key==='Enter')saveEdit()">
+    </div>
+    <div class="modal-field">
+      <label>Responsable</label>
+      <select id="edit-person">
+        <option value="TONY">🟢 TONY</option>
+        <option value="BENJA">🟣 BENJA</option>
+        <option value="FABRI">🔵 FABRI</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Estado</label>
+      <select id="edit-estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="progreso">En progreso</option>
+        <option value="listo">Listo ✓</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Prioridad</label>
+      <select id="edit-prioridad">
+        <option value="alta">🔴 Alta</option>
+        <option value="media">🟡 Media</option>
+        <option value="baja">🟢 Baja</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Día del mes</label>
+      <input id="edit-dia" type="number" min="1" max="31">
+    </div>
+    <div class="modal-field">
+      <label>📝 Notas especiales</label>
+      <textarea id="edit-nota" placeholder="Agrega contexto, links, comentarios..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+      <button class="btn-cancel" onclick="openCopyModal()" style="border-color:var(--accent2);color:var(--accent2)" title="Copiar esta tarea a otro mes">📋 Copiar a mes</button>
+      <button class="btn-save" onclick="saveEdit()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- Copy to Month Modal -->
+<div id="copy-modal" onclick="if(event.target===this)closeCopyModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-title" style="font-size:0.95rem">📋 Copiar tarea a otro mes</div>
+    <p id="copy-task-name" style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5"></p>
+    <div class="modal-field">
+      <label>Mes destino</label>
+      <select id="copy-month">
+        <option value="1">Enero</option><option value="2">Febrero</option>
+        <option value="3">Marzo</option><option value="4">Abril</option>
+        <option value="5">Mayo</option><option value="6">Junio</option>
+        <option value="7">Julio</option><option value="8">Agosto</option>
+        <option value="9">Septiembre</option><option value="10">Octubre</option>
+        <option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Día del mes destino</label>
+      <input id="copy-dia" type="number" min="1" max="31" placeholder="ej. 5">
+    </div>
+    <div class="modal-field">
+      <label>Estado inicial</label>
+      <select id="copy-estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="progreso">En progreso</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCopyModal()">Cancelar</button>
+      <button class="btn-save" onclick="confirmCopy()">Copiar tarea</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
