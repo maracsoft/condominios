@@ -32,7 +32,43 @@ ENTIDADES:
 
 
   PAGO: igual que en el sistburs, consiste en un pago de un cliente, puede ser de cuotas, de anticipo, de separación
+    - codPago
+    - fechaPago
+    - codUsuarioAsesorCreador
+    - codContacto
+    - codMoneda
+    - codArchivoBoleta
+    - codArchivoComprobantePago
+    - monto_soles
+    - monto_dolares
+    - codigo_unico
+    - fechaHoraCreacion
+    - codEstado
+    - fue_corregido
+    - codUsuarioAprobador
+    - fechaHoraAprobacion
+    - numero_operacion
+    - codProgramacion
+    - codMedio
+    - observacion
+    - codEquipo
+    - es_pago_historico
+    - observacion_coordinador
+    - validado_por_administracion
+    - area
+    - codBeneficioGenerado
+    - tipo
+    - codigo_factura_boleta
+    - factburs_img_type
+    - factburs_pago_id
+    - factburs_pago_numero 
 
+
+  AFECTACION_CUOTA_PAGO
+    - codAfectacion
+    - codCuota
+    - codPago
+    - monto_afectado
 
   VENTA: es otra tabla distinta a lote porque aqui guardaremos las ventas caidas tambien (historial de un lote)
     - codVenta
@@ -56,6 +92,61 @@ ENTIDADES:
     - comision_por_venta
     - codProyecto
 
+
+
+
+
+
+
+MODULO TICKETERA AUDIOVISUAL
+
+ticket_audiovisual
+- codTicket
+- fechaHoraCreacion
+- mensaje
+- prioridad
+- codUsuarioCreador
+- codEstado
+- codigo_unico
+- fechaHoraEnvio
+- codUsuarioEditorAsignado
+- fechaHoraInicioEdicion
+- fechaHoraEntrega
+- codUsuarioAprobador
+- fechaHoraFinalizacion
+- comentario_tecnico
+- codMaterial
+- link_entrega
+- fecha_entrega_estimada
+- observacion
+- codUsuarioObservador
+- fechaHoraObservacion
+- nota_entrega
+- codTicketPadre
+- codArea
+- fechaHoraDeadline
+- links_referencia
+
+material
+- codMaterial
+- nombre
+- descripcion
+- dias_entrega_estimada
+
+
+periodo_ejecucion_ticket
+- codPeriodo
+- fechaHoraInicio
+- fechaHoraFin
+- codTicket
+- es_correccion
+- codRazon
+- nota_adicional
+
+
+
 PREGUNTAR: 
   en que consiste cada estado de un lote?
   en el sistema estaria bien que cada registro de cliente pueda ser persona_natural, sociedad_personas_naturales, persona_juridica  
+  COMO GUARDAN EN LA BD EL TEMA DE LAS MORAS? 
+
