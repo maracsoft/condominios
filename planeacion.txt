@@ -31,6 +31,9 @@ ENTIDADES:
     fecha_limite
 
 
+  PAGO: igual que en el sistburs, consiste en un pago de un cliente, puede ser de cuotas, de anticipo, de separación
+
+
   VENTA: es otra tabla distinta a lote porque aqui guardaremos las ventas caidas tambien (historial de un lote)
     - codVenta
     - estado
