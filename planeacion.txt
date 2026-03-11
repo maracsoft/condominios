@@ -15,6 +15,9 @@ ENTIDADES:
 
   Usuario (con rol asesor_comercial,asesor_seguimiento)
   Equipo: san isidro / individual / poder 
+  Cliente: es un cliente de un proyecto, que puede ser persona natural, sociedad, persona juridica
+    - codCliente
+    - nombre
 
   Cliente: AUN NO SE COMO LO HARÉ, NO SE SI DEBA MANEJAR UNA TABLA APARTE PARA CLIENTES O EN LA MISMA DE LOTE, O CREAR UNA QUE SE LLAME VENTAS 
     codCliente

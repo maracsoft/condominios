@@ -1,0 +1,53 @@
+Esta es un resumen de la reunión transcrita en el documento proporcionado, organizada por los temas clave discutidos:
+
+### 1. Contexto de la Reunión
+
+La reunión se centra en la propuesta de implementar un nuevo sistema (basado en el modelo de "SISTBURS") para centralizar y automatizar las operaciones de una empresa inmobiliaria. Actualmente, la empresa maneja gran parte de su información de forma manual mediante múltiples archivos Excel.
+
+### 2. Estructura y Áreas de la Empresa
+Se identificaron las siguientes áreas y su personal clave:
+
+- Ventas: Cuenta con 9 asesores, 1 supervisor y un jefe comercial. Se encargan de captar clientes, gestionar separaciones y realizar el primer cobro.
+- Experiencia del Cliente (Cobranzas):* Conformada por 3 personas. Se encargan de la redacción de contratos, seguimiento de cuotas, visitas a notarías y cobranza de moras.
+
+
+- Finanzas/Administración: Encargadas de la conciliación bancaria diaria de tres bancos (Interbank, BBVA y Scotiabank) y la aprobación de pagos a proveedores.
+
+- Marketing (redes y pauta publicitaria), 
+- Proyectos 
+- Logística
+- Contabilidad (externa pero vinculada al grupo).
+
+### 3. Procesos Actuales y Puntos Críticos ("Cuellos de Botella")
+
+- Ventas y Separaciones: El proceso de separación se hace mediante un archivo Excel donde se registran datos del cliente y estado del lote. Existe un plazo interno de 15 días para completar la cuota inicial tras la separación.
+
+- Gestión de Datos: La información está dispersa. Por ejemplo, para cobranzas usan un Excel con una pestaña por cada cliente, lo que hace el seguimiento extremadamente lento.
+
+- Carga Operativa: Las áreas con mayor carga son Ventas y Experiencia debido al llenado manual de fichas, contratos en Word y comunicación por WhatsApp.
+
+- Conciliación Bancaria: Se realiza manualmente comparando los vouchers enviados por WhatsApp con los movimientos bancarios diarios.
+
+### 4. Funcionalidades Solicitadas para el Nuevo Sistema
+
+- Plano Interactivo: Un plano del proyecto que se actualice automáticamente (pintándose de colores) según el estado del lote (disponible, separado, vendido).
+
+- Automatización de Documentos: Generación automática de proformas, fichas de separación, contratos y cronogramas de pagos.
+- Control de Descuentos y Aprobaciones: Registro de quién aprueba descuentos mayores a los permitidos (normalmente hasta 1,000 o 2,000 soles).
+
+- Métricas de Marketing: Integración con Meta (Facebook/Instagram) para medir la efectividad de los anuncios y el costo por lead de forma real.
+
+- Gestión de Visitas: Registro y seguimiento de las visitas de clientes al proyecto para medir efectividad y costos operativos (buses, refrigerios).
+
+### 5. Definiciones de Negocio
+
+* 
+*Financiamiento:* Ofrecen financiamiento directo sin intereses, pero aplican moras por retrasos: 5 soles diarios hasta el noveno día y 10 soles diarios a partir del décimo.
+
+
+* 
+*Cuotas:* Los plazos estándar son de 12, 24, 36 y 42 cuotas.
+
+
+* 
+*Entregas:* Tienen fechas fijas (ej. diciembre 2024 para Palmeras etapa 1), aunque buscan adelantar procesos de minutas entre abril y mayo.
