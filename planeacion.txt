@@ -1,0 +1,55 @@
+ENTIDADES:
+  Lote: K11 , pertenece a un proyecto. NOMBRE DE LA ENTIDAD A EVALUARSE A FUTURO
+    - codLote: codigo numerico unico
+    - manzana: A,B, V, R, etc
+    - numero_lote: numero de lote 1,27,5,2 
+    - estado: Abono inicial / abono parcial / bloqueado / caida / contrato compra venta / disponible / pago completo / separación
+    - metodo de pago: contado / financiado (en este caso se colocan cuotas de pago)
+    - precio_original
+    
+
+  Proyecto: es un proyecto inmobiliario que agrupa a varios lotes,  Oasis / Palmeras
+    - codProyecto 
+    - nombre 
+    - archivos 
+
+  Usuario (con rol asesor_comercial,asesor_seguimiento)
+  Equipo: san isidro / individual / poder 
+
+  Cliente: AUN NO SE COMO LO HARÉ, NO SE SI DEBA MANEJAR UNA TABLA APARTE PARA CLIENTES O EN LA MISMA DE LOTE, O CREAR UNA QUE SE LLAME VENTAS 
+    codCliente
+    numero_documento
+
+
+  Cuota: similar a la cuta del sistburs, se refiere a una obligacion de pago mensual que tiene un cliente 
+    codCuota
+    codLote 
+    monto
+    fecha_limite
+
+
+  VENTA: es otra tabla distinta a lote porque aqui guardaremos las ventas caidas tambien (historial de un lote)
+    - codVenta
+    - estado
+    - fecha 
+    - codCliente
+    - codEquipo
+    - codUsuarioVendedor
+    - monto_original
+    - descuento
+    - monto_final
+    - monto_comision
+
+
+
+
+  escala: es para las comisiones,
+    - codEscala
+    - cantidad_minima_ventas
+    - cantidad_maxima_ventas
+    - comision_por_venta
+    - codProyecto
+
+PREGUNTAR: 
+  en que consiste cada estado de un lote?
+  en el sistema estaria bien que cada registro de cliente pueda ser persona_natural, sociedad_personas_naturales, persona_juridica  
